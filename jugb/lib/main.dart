@@ -30,12 +30,11 @@ class _PixelPainterState extends State<PixelPainter> {
   Offset _offset = Offset.zero;
   final int _canvasWidth = 1000;
   final int _canvasHeight = 1000;
-  late Uint8List _pixels;
+  Uint8List _pixels = Uint8List(1000 * 1000); // Initialize _pixels here
 
   @override
   void initState() {
     super.initState();
-    _pixels = Uint8List(_canvasWidth * _canvasHeight); // Initialize pixel data
   }
 
   @override
@@ -63,7 +62,7 @@ class _PixelPainterState extends State<PixelPainter> {
             ..scale(_scale),
           child: CustomPaint(
             size: Size(_canvasWidth.toDouble(), _canvasHeight.toDouble()), // Fixed size
-            painter: _PixelPainter(_pixels, _canvasWidth, _scale), // Access _pixels after initialization
+            painter: _PixelPainter(_pixels, _canvasWidth, _scale),
           ),
         ),
       ),
