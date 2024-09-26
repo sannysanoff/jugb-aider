@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'dart:async';
+import 'dart:collection';
 
 void main() {
   runApp(const MyApp());
@@ -39,8 +40,10 @@ class _PixelPainterState extends State<PixelPainter> {
   Offset? _lastPanPosition;
   Offset? _lastDrawPosition;
   late WebSocketChannel _channel;
-  final _pixelUpdateQueue = <String>[];
+  final _pixelUpdateQueue = Queue<String>();
   Timer? _updateTimer;
+  int _inFlightRequests = 0;
+  static const int _maxConcurrentRequests = 4;
 
   @override
   void initState() {
@@ -58,21 +61,29 @@ class _PixelPainterState extends State<PixelPainter> {
   }
 
   void _processPixelUpdateQueue() {
-    if (_pixelUpdateQueue.isNotEmpty) {
-      final pixelToUpdate = _pixelUpdateQueue.removeAt(0);
+    while (_inFlightRequests < _maxConcurrentRequests && _pixelUpdateQueue.isNotEmpty) {
+      final pixelToUpdate = _pixelUpdateQueue.removeFirst();
       _sendPixelUpdate(pixelToUpdate);
     }
   }
 
   void _sendPixelUpdate(String pixelCoord) async {
+    _inFlightRequests++;
     final url = Uri.parse('https://b.jugregator.org/set/$pixelCoord');
     try {
       final response = await http.post(url);
       if (response.statusCode != 200) {
         print('Failed to update pixel: ${response.statusCode}');
+        // Optionally, you can add the pixel back to the queue for retry
+        // _pixelUpdateQueue.addLast(pixelCoord);
       }
     } catch (e) {
       print('Error updating pixel: $e');
+      // Optionally, you can add the pixel back to the queue for retry
+      // _pixelUpdateQueue.addLast(pixelCoord);
+    } finally {
+      _inFlightRequests--;
+      _processPixelUpdateQueue(); // Try to process more pixels if possible
     }
   }
 
@@ -253,7 +264,8 @@ class _PixelPainterState extends State<PixelPainter> {
       // Add to update queue
       String pixelCoord = '${y.toString().padLeft(3, '0')}${x.toString().padLeft(3, '0')}';
       if (!_pixelUpdateQueue.contains(pixelCoord)) {
-        _pixelUpdateQueue.add(pixelCoord);
+        _pixelUpdateQueue.addLast(pixelCoord);
+        _processPixelUpdateQueue(); // Try to process immediately if possible
       }
     }
   }
