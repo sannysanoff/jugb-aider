@@ -1,0 +1,711 @@
+
+# 2024-09-26 16:31:50.934303
++yes
+
+# 2024-09-26 16:32:08.830235
++create flutter project for macos desktop in this directory. call id jugb
+
+# 2024-09-26 16:32:30.940933
++create flutter project for macos desktop in this directory. call id jugb. Do it as a call to flutter binary.
+
+# 2024-09-26 16:32:48.951653
++create flutter project for macos desktop in this directory. call id jugb. Do it as a call to flutter binary. Don't create files, only command
+
+# 2024-09-26 16:33:09.398504
++/run flutter create --platforms=macos jugb
+
+# 2024-09-26 16:33:14.767830
++yes
+
+# 2024-09-26 16:33:45.699303
++/ask how to run on macos?
+
+# 2024-09-26 16:33:57.597497
++/ask how to run on macos? using flutter command
+
+# 2024-09-26 16:34:58.254846
++/ls
+
+# 2024-09-26 16:35:04.627808
++/add *.dart
+
+# 2024-09-26 16:35:47.416067
++/ls
+
+# 2024-09-26 16:35:59.383008
++/add jugb/lib/main.dart
+
+# 2024-09-26 16:36:54.642420
++remove all stuff from the main dart file. Add canvas where I can paint with mouse. Left mouse button will draw pixels. Middle button will scroll canvas. Wheel must zoom in and out. When zoomed, pixels show as a grid.
+
+# 2024-09-26 16:38:11.390287
++/ask how state is maintained on canvas? canvas size should be fixed 1000x1000 pixels, backed by array (bytes with 1/0)
+
+# 2024-09-26 16:38:22.093981
++is state is maintained on canvas? canvas size should be fixed 1000x1000 pixels, backed by array (bytes with 1/0)
+
+# 2024-09-26 16:39:10.901296
++══╡ EXCEPTION CAUGHT BY WIDGETS LIBRARY ╞═══════════════════════════════════════════════════════════
++The following LateError was thrown building PixelPainter(dirty, state: _PixelPainterState#98346):
++LateInitializationError: Field '_pixels@17423167' has not been initialized.
++
++The relevant error-causing widget was:
++  PixelPainter PixelPainter:file:///Users/san/Fun/jug/flutter/jugb/lib/main.dart:15:19
++
++When the exception was thrown, this was the stack:
++#0      _PixelPainterState._pixels (package:jugb/main.dart)
++#1      _PixelPainterState.build (package:jugb/main.dart:66:36)
++#2      StatefulElement.build (package:flutter/src/widgets/framework.dart:5729:27)
++#3      ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5617:15)
++#4      StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:5780:11)
++#5      Element.rebuild (package:flutter/src/widgets/framework.dart:5333:7)
+
+# 2024-09-26 16:39:53.375420
++══╡ EXCEPTION CAUGHT BY WIDGETS LIBRARY ╞═══════════════════════════════════════════════════════════
++The following LateError was thrown building PixelPainter(dirty, state: _PixelPainterState#98346):
++LateInitializationError: Field '_pixels@17423167' has not been initialized.
++
++The relevant error-causing widget was:
++  PixelPainter PixelPainter:file:///Users/san/Fun/jug/flutter/jugb/lib/main.dart:15:19
++
++When the exception was thrown, this was the stack:
++#0      _PixelPainterState._pixels (package:jugb/main.dart)
++#1      _PixelPainterState.build (package:jugb/main.dart:66:36)
++#2      StatefulElement.build (package:flutter/src/widgets/framework.dart:5729:27)
++#3      ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5617:15)
++#4      StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:5780:11)
++#5      Element.rebuild (package:flutter/src/widgets/framework.dart:5333:7)
++#6      BuildScope._tryRebuild (package:flutter/src/widgets/framework.dart:2693:15)
++#7      BuildScope._flushDirtyElements (package:flutter/src/widgets/framework.dart:2752:11)
++#8      BuildOwner.buildScope (package:flutter/src/widgets/framework.dart:3048:18)
+
+# 2024-09-26 16:40:47.774166
++for some reason wheel is not working, please fix
+
+# 2024-09-26 16:41:32.717640
++Reloaded 1 of 709 libraries in 584ms (compile: 32 ms, reload: 303 ms, reassemble: 222 ms).
++
++lib/main.dart:45:32: Error: 'PointerScrollEvent' isn't a type.
++          if (pointerSignal is PointerScrollEvent) {
++                               ^^^^^^^^^^^^^^^^^^
++Performing hot reload...
++Try again after fixing the above error(s).
+
+# 2024-09-26 16:44:28.014341
++when i move, the pixel coordinates match the mouse clicks. However after I zoom, they stop to show at all after zoom, after click etc. Note: zoom must be made so that pixel under mouse must remain in place, like it's normally done in the google maps application, for example. Mouse location is center for zoom transformation.
+
+# 2024-09-26 16:46:14.097332
++looks that drawing routine for zoomed mode is not correct. Grid is drawn, but pixels are not drawn. Note: filled pixel from backing array must result in filled grid square.
+
+# 2024-09-26 16:46:53.030610
++Performing hot reload...
++Reloaded 1 of 709 libraries in 171ms (compile: 62 ms, reload: 54 ms, reassemble: 34 ms).
++
++lib/main.dart:117:41: Error: The getter '_offset' isn't defined for the class '_PixelPainter'.
++ - '_PixelPainter' is from 'package:jugb/main.dart' ('lib/main.dart').
++Try correcting the name to the name of an existing getter, or defining a getter or field named '_offset'.
++          final scaledRect = rect.shift(_offset).scale(_scale, _scale);
++                                        ^^^^^^^
++lib/main.dart:117:50: Error: The method 'scale' isn't defined for the class 'Rect'.
++ - 'Rect' is from 'dart:ui'.
++Try correcting the name to the name of an existing method, or defining a method named 'scale'.
++          final scaledRect = rect.shift(_offset).scale(_scale, _scale);
++                                                 ^^^^^
++lib/main.dart:117:56: Error: The getter '_scale' isn't defined for the class '_PixelPainter'.
++ - '_PixelPainter' is from 'package:jugb/main.dart' ('lib/main.dart').
++Try correcting the name to the name of an existing getter, or defining a getter or field named '_scale'.
++          final scaledRect = rect.shift(_offset).scale(_scale, _scale);
++                                                       ^^^^^^
++lib/main.dart:117:64: Error: The getter '_scale' isn't defined for the class '_PixelPainter'.
++ - '_PixelPainter' is from 'package:jugb/main.dart' ('lib/main.dart').
++Try correcting the name to the name of an existing getter, or defining a getter or field named '_scale'.
++          final scaledRect = rect.shift(_offset).scale(_scale, _scale);
++                                                               ^^^^^^
+
+# 2024-09-26 16:48:15.651357
++now pixels are displayed ok, but mouse click coordinate is not properly translated to the backing array coordinate space. Please fix.
+
+# 2024-09-26 16:49:38.991494
++/undo
+
+# 2024-09-26 16:50:21.192057
++now pixels are displayed ok, no need to change drawing function. BUT! Mouse click coordinate is not properly translated to the backing array coordinate space, so array is changed in wrong place. Please fix. Take into account that mouse can click outside displayed array, so no changes must be done in this case.
+
+# 2024-09-26 16:50:46.274385
++now pixels are displayed ok, DO NOT CHANGE drawing function. BUT! Mouse click coordinate is not properly translated to the backing array coordinate space, so array is changed in wrong place. Please fix. Take into account that mouse can click outside displayed array, so no changes must be done in this case.
+
+# 2024-09-26 16:51:35.310825
++rename _drawPixel to togglePixel
+
+# 2024-09-26 16:52:22.995718
++changes to clicking code seem to have no effect. Please ensure you transform coordinates prior to calling togglePixel
+
+# 2024-09-26 16:53:50.616695
++you're doing transformation but it does not look correct. Add printing code that logs click physical information, current scroll offset and scale, and write to array offset information. I'll paste the result.
+
+# 2024-09-26 16:54:24.825917
++yes
+
+# 2024-09-26 16:54:42.771176
++/run wc -l }
+
+# 2024-09-26 16:54:45.756549
++no
+
+# 2024-09-26 16:54:47.726513
++/run wc -l }
+
+# 2024-09-26 16:54:49.014532
++n
+
+# 2024-09-26 16:54:51.566224
++/run wc -l '}'
+
+# 2024-09-26 16:54:54.364100
++no
+
+# 2024-09-26 16:54:57.261113
++/run cat '}'
+
+# 2024-09-26 16:55:01.628894
++no
+
+# 2024-09-26 16:55:05.168161
++/git rm '}'
+
+# 2024-09-26 16:55:11.099411
++/drop }
+
+# 2024-09-26 16:55:30.816197
++/run head jugb/lib/main.dart
+
+# 2024-09-26 16:55:34.731189
++no
+
+# 2024-09-26 16:55:57.534186
++/undo
+
+# 2024-09-26 16:56:04.621661
++/run git stash
+
+# 2024-09-26 16:56:08.106423
++no
+
+# 2024-09-26 16:56:12.610234
++/undo
+
+# 2024-09-26 17:00:17.834255
++/add jugb/lib/main.dart
+
+# 2024-09-26 17:00:39.807211
++you're doing transformation but it does not look correct. Add few logging code here and there, it will log click physical information, current scroll offset and scale, and write to array offset information. I'll paste the result.
+
+# 2024-09-26 17:01:52.677294
++/ask where the log output is written/
+
+# 2024-09-26 17:02:33.710155
++/ask it is not printed in console during flutter run on macos. How to fix?
+
+# 2024-09-26 17:03:22.983123
++/ask run -v does not help. 
+
+# 2024-09-26 17:03:47.899528
++replace log with debugPrint across the code
+
+# 2024-09-26 17:05:42.660503
++I placed mouse around 200,200 and zoomed in. This is the result. I suspect, offset must move to negative, isn't it? Based on the mouse coords, etc.: [+10550 ms] flutter: Scale: 1.4000244140625, Offset: Offset(1.6, 4.3)
++[+7724 ms] flutter: Scale: 1.800048828125, Offset: Offset(1.6, 4.3)
++[+4510 ms] flutter: Scale: 2.2000732421875, Offset: Offset(1.6, 4.3)
++[+2161 ms] flutter: TapDown Local: Offset(449.3, 357.3), Global: Offset(449.3, 357.3), Scale: 2.2000732421875, Offset: Offset(1.6, 4.3)
++[        ] flutter: Calculated pixel x: 204, y: 160
+
+# 2024-09-26 17:07:21.225194
++now panning by middle mouse button is broken. Panning is broke by any button.
+
+# 2024-09-26 17:09:15.784611
++looks like you're not dividing mouse coordinates by zoom factor when handling mouse clicks.
+
+# 2024-09-26 17:10:29.567236
++your recent change does not have anything to do with my request. I zoomed in, and my pixel toggle does not happen under my mouse, but somewhere else.
+
+# 2024-09-26 17:11:10.391529
++/model openrouter/anthropic/claude-3.5-sonnet
+
+# 2024-09-26 17:11:28.780268
++I zoomed in, and my pixel toggle does not happen under my mouse, but somewhere else.
+
+# 2024-09-26 17:11:36.866874
++/model claude-3-5-sonnet-20240620
+
+# 2024-09-26 17:11:38.243228
++I zoomed in, and my pixel toggle does not happen under my mouse, but somewhere else.
+
+# 2024-09-26 17:12:03.517370
++/add jugb/lib/main.dart
+
+# 2024-09-26 17:12:13.597040
++/model claude-3-5-sonnet-20240620
+
+# 2024-09-26 17:12:15.804191
++I zoomed in, and my pixel toggle does not happen under my mouse, but somewhere else.
+
+# 2024-09-26 17:13:12.640792
++/model
+
+# 2024-09-26 17:13:21.733180
++/add jugb/lib/main.dart
+
+# 2024-09-26 17:13:23.036153
++I zoomed in, and my pixel toggle does not happen under my mouse, but somewhere else.
+
+# 2024-09-26 17:13:42.762047
++no
+
+# 2024-09-26 17:13:43.967967
++/undo
+
+# 2024-09-26 17:15:06.824086
++please add logging using debugPrint and instruct the sequence for me to do. I will paste log here. Bug is still there, it's not related to rounding.
+
+# 2024-09-26 17:15:30.259607
++no
+
+# 2024-09-26 17:24:55.496363
++check maybe the UI already scales mouse event, and you need to handle it second time?
+
+# 2024-09-26 17:25:09.174506
++no
+
+# 2024-09-26 17:28:29.428044
++wrong variable, from the output, is offset. My viewport size is 900+ pixels by x. For two different zoom factors, I placed left top corner of grid in the middle position by x. Offset = 146, 166, depending on the zoom. It's wrong.
+
+# 2024-09-26 17:30:38.600380
++no
+
+# 2024-09-26 17:30:55.490196
++offset is still not correct. Look: corner of the grid is in the middle of the screen, while this: [        ] flutter: Current scale: 1.4000244140625, offset: Offset(177.2, 0.3)
+
+# 2024-09-26 17:31:09.079294
++no
+
+# 2024-09-26 17:32:59.635357
++please don't use any flutter scrolling features, nor flutter viewports. Perform all transforms with Transform2D matrix. Don't use offsets etc. Start with simple identity matrix.
+
+# 2024-09-26 17:33:38.714235
++no
+
+# 2024-09-26 17:33:50.443993
++[  +15 ms] lib/main.dart:68:64: Error: The method 'Vector3' isn't defined for the class '_PixelPainterState'.
++[        ]  - '_PixelPainterState' is from 'package:jugb/main.dart' ('lib/main.dart').
++[        ] Try correcting the name to the name of an existing method, or defining a method named 'Vector3'.
++[        ]           final transformedPoint = inverseTransform.transform3(Vector3(
++[        ]                                                                ^^^^^^^
+
+# 2024-09-26 17:33:58.454618
++no
+
+# 2024-09-26 17:34:07.570609
++[ +254 ms] ══╡ EXCEPTION CAUGHT BY WIDGETS LIBRARY ╞═══════════════════════════════════════════════════════════
++                    The following assertion was thrown building PixelPainter(dirty, state: _PixelPainterState#f141a):
++                    Incorrect GestureDetector arguments.
++                    Having both a pan gesture recognizer and a scale gesture recognizer is redundant; scale is a
++                    superset of pan.
++                    Just use the scale gesture recognizer.
++
++                    The relevant error-causing widget was:
++                      PixelPainter PixelPainter:file:///Users/san/Fun/jug/flutter/jugb/lib/main.dart:18:19
++
++                    When the exception was thrown, this was the stack:
++                    #0      new GestureDetector.<anonymous closure> (package:flutter/src/widgets/gesture_detector.dart:298:14)
++                    #1      new GestureDetector (package:flutter/src/widgets/gesture_detector.dart:316:9)
++                    #2      _PixelPainterState.build (package:jugb/main.dart:40:13)
++                    #3      StatefulElement.build (package:flutter/src/widgets/framework.dart:5729:27)
++                    #4      ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5617:15)
++                    #5      StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:5780:11)
++                    #6      Element.rebuild (package:flutter/src/widgets/framework.dart:5333:7)
++                    #7      ComponentElement._firstBuild (package:flutter/src/widgets/framework.dart:5599:5)
++                    #8      StatefulElement._firstBuild (package:flutter/src/widgets/framework.dart:5771:11)
+
+# 2024-09-26 17:34:33.744201
++no
+
+# 2024-09-26 17:35:44.492918
++now implement scaling the matrix around the mouse point. Leave drawing routine simple.
+
+# 2024-09-26 17:35:57.560583
++no
+
+# 2024-09-26 17:36:04.603254
++[  +12 ms] lib/main.dart:52:53: Error: The method 'inverted' isn't defined for the class 'Matrix4'.
++[        ]  - 'Matrix4' is from 'package:vector_math/vector_math_64.dart' ('../../../../.pub-cache/hosted/pub.dev/vector_math-2.1.4/lib/vector_math_64.dart').
++[        ] Try correcting the name to the name of an existing method, or defining a method named 'inverted'.
++[        ]               final focalPointInCanvas = _transform.inverted().transform3(Vector3(
++[        ]                                                     ^^^^^^^^
+
+# 2024-09-26 17:36:22.283810
++no
+
+# 2024-09-26 17:36:31.487127
++nothing happens on mouse wheel, add logging if event is coming?
+
+# 2024-09-26 17:36:49.115797
++no
+
+# 2024-09-26 17:36:49.906282
++[        ] Bundle processing done.
++[   +5 ms] lib/main.dart:40:20: Error: Can't find ')' to match '('.
++[        ]     return Scaffold(
++[        ]                    ^
++[  +16 ms] Syncing files to device macOS... (completed in 23ms)
++[        ] Synced 0.0MB.
+
+# 2024-09-26 17:37:15.649069
++no
+
+# 2024-09-26 17:37:22.560892
++event is coming, nothing happens (no zoom). [  +45 ms] flutter: Mouse wheel event detected:
++[        ] flutter:   Scroll delta: Offset(-0.0, -28.8)
++[        ] flutter:   Local position: Offset(101.7, 142.0)
+
+# 2024-09-26 17:37:34.394860
++no
+
+# 2024-09-26 17:38:05.957049
++prevent zooming out too far, 1:1 is enough
+
+# 2024-09-26 17:38:55.199549
++no
+
+# 2024-09-26 17:39:19.923361
++all correct, but zooming happens not around the mouse pointers, but some wrong way. However, everything else is correct
+
+# 2024-09-26 17:39:49.145246
++[        ] Bundle processing done.
++[  +16 ms] lib/main.dart:58:62: Error: The method 'transform3' isn't defined for the class 'double'.
++[        ] Try correcting the name to the name of an existing method, or defining a method named 'transform3'.
++[        ]               final focalPointInCanvas = _transform.invert().transform3(Vector3(
++[        ]                                                              ^^^^^^^^^^
+
+# 2024-09-26 17:39:57.810235
++no
+
+# 2024-09-26 17:40:04.132590
++[        ] Bundle processing done.
++[  +18 ms] lib/main.dart:58:53: Error: The method 'inverted' isn't defined for the class 'Matrix4'.
++[        ]  - 'Matrix4' is from 'package:vector_math/vector_math_64.dart' ('../../../../.pub-cache/hosted/pub.dev/vector_math-2.1.4/lib/vector_math_64.dart').
++[        ] Try correcting the name to the name of an existing method, or defining a method named 'inverted'.
++[        ]               final focalPointInCanvas = _transform.inverted().transform(Vector3(
++[        ]                                                     ^^^^^^^^
++[   +4 ms] Syncing files to device macOS... (completed in 25ms)
+
+# 2024-09-26 17:40:35.120134
++no
+
+# 2024-09-26 17:41:28.992580
++differentiate between dragging using middle mouse button, and drawing using left mouse button. Drawing must toggle pixels while mouse is moved. dragging with middle button must pan the screen
+
+# 2024-09-26 17:41:47.742930
++no
+
+# 2024-09-26 17:41:56.263347
++[        ] Bundle processing done.
++[  +16 ms] lib/main.dart:82:33: Error: The getter 'buttons' isn't defined for the class 'DragStartDetails'.
++[        ]  - 'DragStartDetails' is from 'package:flutter/src/gestures/drag_details.dart' ('../../../../soft/flutter/packages/flutter/lib/src/gestures/drag_details.dart').
++[        ] Try correcting the name to the name of an existing getter, or defining a getter or field named 'buttons'.
++[        ]                         details.buttons == kMiddleMouseButton) {
++[        ]                                 ^^^^^^^
++[        ] lib/main.dart:83:50: Error: A value of type 'Offset' can't be assigned to a variable of type 'Point<double>?'.
++[        ]  - 'Offset' is from 'dart:ui'.
++[        ]  - 'Point' is from 'dart:math'.
++[        ]                       _lastPanPosition = details.localPosition;
++[        ]                                                  ^
++[        ] lib/main.dart:87:33: Error: The getter 'kind' isn't defined for the class 'DragUpdateDetails'.
++[        ]  - 'DragUpdateDetails' is from 'package:flutter/src/gestures/drag_details.dart' ('../../../../soft/flutter/packages/flutter/lib/src/gestures/drag_details.dart').
++[        ] Try correcting the name to the name of an existing getter, or defining a getter or field named 'kind'.
++[        ]                     if (details.kind == PointerDeviceKind.mouse) {
++[        ]                                 ^^^^
++[        ] lib/main.dart:88:35: Error: The getter 'buttons' isn't defined for the class 'DragUpdateDetails'.
++[        ]  - 'DragUpdateDetails' is from 'package:flutter/src/gestures/drag_details.dart' ('../../../../soft/flutter/packages/flutter/lib/src/gestures/drag_details.dart').
++[        ] Try correcting the name to the name of an existing getter, or defining a getter or field named 'buttons'.
++[        ]                       if (details.buttons == kMiddleMouseButton) {
++[        ]                                   ^^^^^^^
++[        ] lib/main.dart:91:83: Error: The getter 'dx' isn't defined for the class 'Point<double>'.
++[        ]  - 'Point' is from 'dart:math'.
++[        ] Try correcting the name to the name of an existing getter, or defining a getter or field named 'dx'.
++[        ]                           final dx = details.localPosition.dx - _lastPanPosition!.dx;
++[        ]                                                                                   ^^
++[        ] lib/main.dart:92:83: Error: The getter 'dy' isn't defined for the class 'Point<double>'.
++[        ]  - 'Point' is from 'dart:math'.
++[        ] Try correcting the name to the name of an existing getter, or defining a getter or field named 'dy'.
++[        ]                           final dy = details.localPosition.dy - _lastPanPosition!.dy;
++[        ]                                                                                   ^^
++[        ] lib/main.dart:96:54: Error: A value of type 'Offset' can't be assigned to a variable of type 'Point<double>?'.
++[        ]  - 'Offset' is from 'dart:ui'.
++[        ]  - 'Point' is from 'dart:math'.
++[        ]                           _lastPanPosition = details.localPosition;
++[        ]                                                      ^
++[        ] lib/main.dart:98:42: Error: The getter 'buttons' isn't defined for the class 'DragUpdateDetails'.
++[        ]  - 'DragUpdateDetails' is from 'package:flutter/src/gestures/drag_details.dart' ('../../../../soft/flutter/packages/flutter/lib/src/gestures/drag_details.dart').
++[        ] Try correcting the name to the name of an existing getter, or defining a getter or field named 'buttons'.
++[        ]                       } else if (details.buttons == kPrimaryMouseButton) {
++[        ]                                          ^^^^^^^
+
+# 2024-09-26 17:43:16.811408
++if mouse motion happens to the same square second time without leaving it, don't send it. Otherwise (wrongly) while I move mouse over the sqare, it's toggling forth and back. Toggle should occur only on click. Otherwise, it's usual "invert" operation.
+
+# 2024-09-26 17:45:00.044752
++behavior is mostly correct. Single clicks are not handled for some reason. 
+
+# 2024-09-26 17:45:56.891152
++for some reason field starts with all black squares and gray grid.
+
+# 2024-09-26 17:46:06.172275
++no
+
+# 2024-09-26 17:46:18.506740
++[  +12 ms] lib/main.dart:38:39: Error: The method 'fill' isn't defined for the class 'Uint8List'.
++[        ]  - 'Uint8List' is from 'dart:typed_data'.
++[        ] Try correcting the name to the name of an existing method, or defining a method named 'fill'.
++[        ]     _pixels = Uint8List(1000 * 1000)..fill(255);  // Initialize with white color
++[        ]                                       ^^^^
+
+# 2024-09-26 17:47:23.970578
++no
+
+# 2024-09-26 17:48:55.677220
++now take initial state from the web: https://b.jugregator.org/api/grid. You will receive base64-encoded string. Decode it. Then it will contain bitmask that specifies initial state. LSB of the first byte is (0,0). Then each 8 bits are next pixels, increasing x coordinate. Then next 8 bits. Etc. Remember 1000 x 1000 canvas.
+
+# 2024-09-26 17:48:57.299053
++no
+
+# 2024-09-26 17:49:27.629198
++now take initial state from the web: https://b.jugregator.org/api/grid. You will receive base64-encoded string. Decode it. Then it will contain bitmask that specifies initial state. LSB of the first byte is (0,0). Then each 8 bits are next pixels, increasing x coordinate. Then next 8 bits. Etc. Remember 1000 x 1000 canvas.
+
+# 2024-09-26 17:49:46.631982
++yes
+
+# 2024-09-26 17:49:46.639632
++/run flutter pub add http
+
+# 2024-09-26 17:50:32.605617
++no
+
+# 2024-09-26 17:50:34.918075
++[ERROR:flutter/runtime/dart_vm_initializer.cc(41)] Unhandled Exception: ClientException with SocketException: Connection failed (OS Error: Operation not permitted, errno = 1), address = b.jugregator.org, port = 443, uri=https://b.jugregator.org/api/grid
++#0      IOClient.send (package:http/src/io_client.dart:154:7)
++<asynchronous suspension>
++#1      BaseClient._sendUnstreamed (package:http/src/base_client.dart:93:32)
++<asynchronous suspension>
++#2      _withClient (package:http/http.dart:167:12)
++<asynchronous suspension>
++#3      _PixelPainterState._fetchInitialState (package:jugb/main.dart:48:22)
++<asynchronous suspension>
++
+
+# 2024-09-26 17:51:14.534311
++/ask (OS Error: Operation not permitted, errno = 1),  this is macos restriction, something to add to Info.plist
+
+# 2024-09-26 17:51:17.144641
++yes
+
+# 2024-09-26 17:51:29.379908
++(OS Error: Operation not permitted, errno = 1),  this is macos restriction, something to add to Info.plist
+
+# 2024-09-26 17:51:47.653327
++no
+
+# 2024-09-26 17:52:41.338503
++still error, maybe another OS permission:  Connection failed (OS Error: Operation not permitted, errno = 1), address = b.jugregator.org, port = 443, uri=https://b.jugregator.org/
+
+# 2024-09-26 17:52:42.867438
++no
+
+# 2024-09-26 17:53:04.058921
++yes
+
+# 2024-09-26 17:53:09.402398
++no
+
+# 2024-09-26 17:53:14.017276
++yes
+
+# 2024-09-26 17:53:26.740824
++no
+
+# 2024-09-26 17:53:39.170394
++also check Debug entitlements
+
+# 2024-09-26 17:53:48.973229
++no
+
+# 2024-09-26 17:56:00.824814
++also please connect to the wss://b.jugregator.org/ws websocket. Here you'll find messages like this: {"on":[103899,101899,100899,99899,99898],"off":[103896,103893,102892,103895,103894,103897,103898,101900,100900]}. This is %03d%03d of Y and X coordinates (Y first). Handle these updates and modify backing array and redraw when needed. "on" means pixel is turned on, off means pixel is cleared.
+
+# 2024-09-26 17:56:19.704484
++yes
+
+# 2024-09-26 17:56:35.203370
++/run flutter pub get
+
+# 2024-09-26 17:56:51.360022
++no
+
+# 2024-09-26 17:57:11.957670
++please also print incoming messages
+
+# 2024-09-26 17:57:26.803713
++no
+
+# 2024-09-26 17:59:53.429026
++now you'll do following. When pixel is changed (toggled) by me, you'll send http query (limit query rate to 5 queries per second, not more, use some kind of thread pool or queues). Query is following: it's POST to following url:         https://b.jugregator.org/set/399338  , where number is %03d%03d of Y, X coordinate in the backing array. Put some other value in array (say, 80). Draw such pixel in red. When websocket data comes, update 80 with proper 0 or 1.
+
+# 2024-09-26 17:59:55.458022
++no
+
+# 2024-09-26 18:01:33.863414
++flutter: Received WebSocket message: {"on":[104894,104895,104896],"off":[103897,103898,102899,101900,100900,99901,98901,97901,96901,95901,94901,93901,92901,91901,90900,89899,88898]}
++flutter: Failed to update pixel: 503
++flutter: Failed to update pixel: 503
++flutter: Failed to update pixel: 503
++flutter: Failed to update pixel: 503
++flutter: Received WebSocket message: {"on":[94895,95895,96895,535316,535317,535319,535318,535320,535321,535322,535323,535324,535325,535327,535329,534329,534330,534332],"off":[88897,88896]}
++flutter: Failed to update pixel: 503
+
+# 2024-09-26 18:03:13.949824
++no
+
+# 2024-09-26 18:03:16.036765
++/undo
+
+# 2024-09-26 18:03:45.736607
++please change handling so it's not more than 4 http requests in flight at any time.
+
+# 2024-09-26 18:04:05.231702
++no
+
+# 2024-09-26 21:41:11.692620
++don't render grid lines if zoom < 10
+
+# 2024-09-26 21:41:27.564324
++no
+
+# 2024-09-26 21:42:28.849031
++my frame rate is very slow. Maybe there's a way to batch drawing to speed up repaint?
+
+# 2024-09-26 21:43:21.558457
++no
+
+# 2024-09-26 21:43:22.578560
++
++lib/main.dart:35:1: Error: Directives must appear before any declarations.
++Try moving the directive before any declarations.
++import 'dart:ui' as ui;
++^^^^^^
+
+# 2024-09-26 21:43:42.929423
++no
+
+# 2024-09-26 21:44:08.461799
++
++[ERROR:flutter/lib/ui/painting/image_decoder_skia.cc(89)] Could not create image from decompressed bytes.
++[ERROR:flutter/runtime/dart_vm_initializer.cc(41)] Unhandled Exception: Exception: Codec failed to produce an image, possibly due to invalid image data.
++
++[ERROR:flutter/lib/ui/painting/image_decoder_skia.cc(89)] Could not create image from decompressed bytes.
++[ERROR:flutter/runtime/dart_vm_initializer.cc(41)] Unhandled Exception: Exception: Codec failed to produce an image, possibly due to invalid image data.
+
+# 2024-09-26 21:44:34.691282
++
++
++lib/main.dart:85:9: Error: No named parameter with the name 'onError'.
++        onError: (error) {
++        ^^^^^^^
++org-dartlang-sdk:///flutter/lib/ui/painting.dart:2417:6: Context: Found this candidate, but the arguments don't match.
++void decodeImageFromPixels(
++     ^^^^^^^^^^^^^^^^^^^^^
+
+# 2024-09-26 21:44:53.341595
++/run flutter pub get
+
+# 2024-09-26 21:44:53.761347
++/run flutter run
+
+# 2024-09-26 21:44:59.195454
++no
+
+# 2024-09-26 21:45:11.768435
++
++flutter: Updating cached image
++flutter: Pixel data length: 1000000
++flutter: Canvas dimensions: 1000 x 1000
++[ERROR:flutter/lib/ui/painting/image_decoder_skia.cc(89)] Could not create image from decompressed bytes.
++[ERROR:flutter/runtime/dart_vm_initializer.cc(41)] Unhandled Exception: Exception: Codec failed to produce an image, possibly due to invalid image data.
++
+
+# 2024-09-26 21:45:52.270028
++flutter: Updating cached image
++flutter: Pixel data length: 1000000
++flutter: Canvas dimensions: 1000 x 1000
++flutter: Error in _updateCachedImage: Exception: Invalid pixel data length
+
+# 2024-09-26 21:48:51.695970
++A Dart VM Service on macOS is available at: http://127.0.0.1:63525/yrq8YtcNCSI=/
++
++══╡ EXCEPTION CAUGHT BY RENDERING LIBRARY ╞═════════════════════════════════════════════════════════
++The following RangeError was thrown during paint():
++RangeError (length): Invalid value: Not in inclusive range 0..999999: 1000003
++
++The relevant error-causing widget was:
++  CustomPaint CustomPaint:file:///Users/san/Fun/jug/flutter/jugb/lib/main.dart:318:16
++
++When the exception was thrown, this was the stack:
++#0      Uint8List.[] (dart:typed_data-patch/typed_data_patch.dart)
++#1      _PixelPainter.paint (package:jugb/main.dart:373:19)
++#2      RenderCustomPaint._paintWithPainter (package:flutter/src/rendering/custom_paint.dart:588:13)
++#3      RenderCustomPaint.paint (package:flutter/src/rendering/custom_paint.dart:630:7)
++#4      RenderObject._paintWithContext (package:flutter/src/rendering/object.dart:3268:7)
++#5      PaintingContext.paintChild (package:flutter/src/rendering/object.dart:251:13)
++#6      RenderProxyBoxMixin.paint (package:flutter/src/rendering/proxy_box.dart:136:13)
++#7      RenderObject._paintWithContext (package:flutter/src/rendering/object.dart:3268:7)
++#8      PaintingContext.paintChild (package:flutter/src/rendering/object.dart:251:13)
++#9      RenderProxyBoxMixin.paint (package:flutter/src/rendering/proxy_box.dart:136:13)
+
+# 2024-09-26 21:48:53.276344
++no
+
+# 2024-09-26 21:49:26.898110
++don't forget to invalidate / whatever, when data has been loaded or updated via websocket
+
+# 2024-09-26 21:51:00.313547
++when I paint with a mouse, pixel must become red (value 80) and then, after websocket update, black or white. Please fix.
+
+# 2024-09-26 21:51:43.114654
++lib/main.dart:200:8: Error: '_updatePixels' is already declared in this scope.
++  void _updatePixels(List<dynamic> coordinates, bool isOn) {
++       ^^^^^^^^^^^^^
++lib/main.dart:178:8: Context: Previous declaration of '_updatePixels'.
++  void _updatePixels(List<dynamic> coordinates, bool isOn) {
++       ^^^^^^^^^^^^^
++lib/main.dart:169:7: Error: Can't use '_updatePixels' because it is declared more than once.
++      _updatePixels(data['on'] as List<dynamic>, true);
++      ^
++lib/main.dart:172:7: Error: Can't use '_updatePixels' because it is declared more than once.
++      _updatePixels(data['off'] as List<dynamic>, false);
++      ^
+
+# 2024-09-26 21:53:09.302130
++no
+
+# 2024-09-26 21:53:17.283821
++it is being painted by gray, not red, please fix
+
+# 2024-09-26 21:55:16.183757
++/ask is _pixels in RGBA (4 bytes per pixel) or 1 byte per pixel? I'm lost.
+
+# 2024-09-26 21:56:29.712539
++make sure you use one format everywhere,probably RGBA, if it's faster for rendering. So, initialize image and keep only one array across the application. 
+
+# 2024-09-26 21:57:54.258021
++if for some reason pixel is failed to update, please re-schedule http request for later, and retry using same rate.
+
+# 2024-09-26 21:59:24.591373
++remove debug output
