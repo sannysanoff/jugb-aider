@@ -182,6 +182,28 @@ class _PixelPainterState extends State<PixelPainter> {
       final int x = int.parse(coordStr.substring(3));
       if (x >= 0 && x < _canvasWidth && y >= 0 && y < _canvasHeight) {
         int index = y * _canvasWidth + x;
+        if (_pixels.length == _canvasWidth * _canvasHeight) {
+          // Grayscale format
+          _pixels[index] = isOn ? 0 : 255;
+        } else if (_pixels.length == _canvasWidth * _canvasHeight * 4) {
+          // RGBA format
+          index *= 4;
+          _pixels[index] = isOn ? 0 : 255;     // Red
+          _pixels[index + 1] = isOn ? 0 : 255; // Green
+          _pixels[index + 2] = isOn ? 0 : 255; // Blue
+          _pixels[index + 3] = 255; // Alpha (fully opaque)
+        }
+      }
+    }
+  }
+
+  void _updatePixels(List<dynamic> coordinates, bool isOn) {
+    for (final coord in coordinates) {
+      final String coordStr = coord.toString().padLeft(6, '0');
+      final int y = int.parse(coordStr.substring(0, 3));
+      final int x = int.parse(coordStr.substring(3));
+      if (x >= 0 && x < _canvasWidth && y >= 0 && y < _canvasHeight) {
+        int index = y * _canvasWidth + x;
         _pixels[index] = isOn ? 0 : 255;
       }
     }
@@ -330,13 +352,13 @@ class _PixelPainterState extends State<PixelPainter> {
       int index = y * _canvasWidth + x;
       if (_pixels.length == _canvasWidth * _canvasHeight) {
         // Grayscale format
-        _pixels[index] = _pixels[index] == 0 ? 255 : 0;
+        _pixels[index] = 80; // Set to red (value 80)
       } else if (_pixels.length == _canvasWidth * _canvasHeight * 4) {
         // RGBA format
         index *= 4;
-        _pixels[index] = _pixels[index] == 0 ? 255 : 0;     // Red
-        _pixels[index + 1] = _pixels[index + 1] == 0 ? 255 : 0;   // Green
-        _pixels[index + 2] = _pixels[index + 2] == 0 ? 255 : 0;   // Blue
+        _pixels[index] = 80;     // Red (value 80)
+        _pixels[index + 1] = 0;  // Green
+        _pixels[index + 2] = 0;  // Blue
         _pixels[index + 3] = 255; // Alpha (fully opaque)
       }
       _needsImageUpdate = true;
