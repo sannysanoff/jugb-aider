@@ -709,3 +709,51 @@
 
 # 2024-09-26 21:59:24.591373
 +remove debug output
+
+# 2024-09-26 22:41:26.795544
++split main.dart into multiple files
+
+# 2024-09-26 22:42:43.077603
++extract pixel_painter into separate class
+
+# 2024-09-26 22:47:04.955917
++y
+
+# 2024-09-26 22:50:08.562667
++no
+
+# 2024-09-26 22:51:59.067135
++can you refator code so that all network and buffer-related logic is in separate file (maybe with some listeners or whatever - to notify changes) and ui remains in original place
+
+# 2024-09-26 22:54:37.298842
++y
+
+# 2024-09-26 22:54:45.189523
++no
+
+# 2024-09-26 22:55:00.178615
++Error detected in pubspec.yaml:
++Error on line 41, column 3: Duplicate mapping key.
++   ╷
++41 │   http: ^1.2.2
++   │   ^^^^
++   ╵
++Please correct the pubspec.yaml file at /Users/san/Fun/jug/flutter/jugb/pubspec.yaml
+
+# 2024-09-26 22:55:28.790568
++--- xcodebuild: WARNING: Using the first of multiple matching destinations:
++{ platform:macOS, arch:arm64, id:00008112-000E70890C3BC01E, name:My Mac }
++{ platform:macOS, arch:x86_64, id:00008112-000E70890C3BC01E, name:My Mac }
++lib/pixel_painter.dart:48:25: Error: The method 'Completer' isn't defined for the class '_PixelPainterState'.
++ - '_PixelPainterState' is from 'package:jugb/pixel_painter.dart' ('lib/pixel_painter.dart').
++Try correcting the name to the name of an existing method, or defining a method named 'Completer'.
++      final completer = Completer<ui.Image>();
++                        ^^^^^^^^^
++Target kernel_snapshot_program failed: Exception
++
++Command PhaseScriptExecution failed with a nonzero exit code
++** BUILD FAILED **
++
+
+# 2024-09-26 22:55:38.211183
++no

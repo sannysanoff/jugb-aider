@@ -11,3 +11,4 @@ see [input_history-human.md](input_history-human.md) to see chat session (cleane
 
 watch [video](jug-video.mp4) to see app in action.
 
+refactorint video (not reflected in history) is available (jug-2.mp4)[here].
