@@ -51,7 +51,7 @@ class _PixelPainterState extends State<PixelPainter> {
 
               // Adjust offset based on zoom origin
               Offset focalPoint = pointerSignal.localPosition;
-              _offset = _offset + (focalPoint - _offset) * (1 - _scale);
+              _offset = (focalPoint - (focalPoint - _offset) / _scale * _scale);
 
 
             });
@@ -66,6 +66,7 @@ class _PixelPainterState extends State<PixelPainter> {
               setState(() {
                 _offset += details.localFocalPoint - _lastPosition!;
                 _scale *= details.scale;
+
                 _lastPosition = details.localFocalPoint;
               });
             }
@@ -88,8 +89,9 @@ class _PixelPainterState extends State<PixelPainter> {
   }
 
   void _drawPixel(Offset position) {
-    final x = (position.dx / _scale - _offset.dx / _scale).round();
-    final y = (position.dy / _scale - _offset.dy / _scale).round();
+    // Account for scale and offset when calculating pixel coordinates
+    final x = ((position.dx - _offset.dx) / _scale).round();
+    final y = ((position.dy - _offset.dy) / _scale).round();
 
     if (x >= 0 && x < _canvasWidth && y >= 0 && y < _canvasHeight) {
       setState(() {
