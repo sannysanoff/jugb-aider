@@ -48,17 +48,22 @@ class _PixelPainterState extends State<PixelPainter> {
           if (pointerSignal is PointerScrollEvent) {
             setState(() {
               double zoomFactor = 0.1;
-              double previousScale = _scale; // Store the previous scale
+              double previousScale = _scale;
 
-              _scale += pointerSignal.scrollDelta.dy * zoomFactor * -1; // Zoom in/out
-              _scale = _scale.clamp(0.1, 10.0); // Limit zoom level
+              _scale += pointerSignal.scrollDelta.dy * zoomFactor * -1;
+              _scale = _scale.clamp(0.1, 10.0);
 
-              // Adjust offset based on zoom origin and the change in scale
               Offset focalPoint = pointerSignal.localPosition;
-              _offset = focalPoint - (focalPoint - _offset) * (_scale / previousScale);
+              Offset previousOffset = _offset;
+              
+              // Calculate new offset
+              _offset = focalPoint - (focalPoint - previousOffset) * (_scale / previousScale);
 
-
-              debugPrint("Scale: $_scale, Offset: $_offset"); // Changed to debugPrint
+              debugPrint("Zoom event:");
+              debugPrint("Previous scale: $previousScale, New scale: $_scale");
+              debugPrint("Focal point: $focalPoint");
+              debugPrint("Previous offset: $previousOffset, New offset: $_offset");
+              debugPrint("Viewport size: ${context.size}");
             });
           }
         },
@@ -76,20 +81,15 @@ class _PixelPainterState extends State<PixelPainter> {
 
           },
           onTapDown: (details) {
-            // Use raw coordinates without applying scale or offset
-            final x = details.localPosition.dx.round();
-            final y = details.localPosition.dy.round();
-
-            debugPrint('Tap detected at local position: ${details.localPosition}');
-            debugPrint('Raw pixel coordinates: x: $x, y: $y');
-            debugPrint('Current scale: $_scale, offset: $_offset');
-
-            // Calculate scaled coordinates for comparison
+            // Calculate scaled coordinates
             final scaledX = ((details.localPosition.dx - _offset.dx) / _scale).round();
             final scaledY = ((details.localPosition.dy - _offset.dy) / _scale).round();
-            debugPrint('Scaled pixel coordinates: x: $scaledX, y: $scaledY');
 
-            togglePixel(x, y);
+            debugPrint('Tap detected at local position: ${details.localPosition}');
+            debugPrint('Scaled pixel coordinates: x: $scaledX, y: $scaledY');
+            debugPrint('Current scale: $_scale, offset: $_offset');
+
+            togglePixel(scaledX, scaledY);
           },
           child: Transform(
             transform: Matrix4.identity()
