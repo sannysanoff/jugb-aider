@@ -71,50 +71,47 @@ class _PixelPainterState extends State<PixelPainter> {
             });
           }
         },
-        child: GestureDetector(
-          onScaleStart: (details) {
-            _lastPanPosition = Point(details.localFocalPoint.dx, details.localFocalPoint.dy);
+        child: RawGestureDetector(
+          gestures: <Type, GestureRecognizerFactory>{
+            PanGestureRecognizer: GestureRecognizerFactoryWithHandlers<PanGestureRecognizer>(
+              () => PanGestureRecognizer(),
+              (PanGestureRecognizer instance) {
+                instance
+                  ..onStart = (details) {
+                    if (details.kind == PointerDeviceKind.mouse &&
+                        details.buttons == kMiddleMouseButton) {
+                      _lastPanPosition = details.localPosition;
+                    }
+                  }
+                  ..onUpdate = (details) {
+                    if (details.kind == PointerDeviceKind.mouse) {
+                      if (details.buttons == kMiddleMouseButton) {
+                        // Middle mouse button: pan
+                        setState(() {
+                          final dx = details.localPosition.dx - _lastPanPosition!.dx;
+                          final dy = details.localPosition.dy - _lastPanPosition!.dy;
+                          _transform = Matrix4.identity()
+                            ..translate(dx, dy)
+                            ..multiply(_transform);
+                          _lastPanPosition = details.localPosition;
+                        });
+                      } else if (details.buttons == kPrimaryMouseButton) {
+                        // Left mouse button: draw
+                        final inverseTransform = Matrix4.inverted(_transform);
+                        final transformedPoint = inverseTransform.transform3(Vector3(
+                          details.localPosition.dx,
+                          details.localPosition.dy,
+                          0,
+                        ));
+                        final x = transformedPoint.x.round();
+                        final y = transformedPoint.y.round();
+                        togglePixel(x, y);
+                      }
+                    }
+                  };
+              },
+            ),
           },
-          onScaleUpdate: (details) {
-            setState(() {
-              if (_lastPanPosition != null) {
-                final dx = details.localFocalPoint.dx - _lastPanPosition!.x;
-                final dy = details.localFocalPoint.dy - _lastPanPosition!.y;
-                double scale = details.scale;
-                
-                // Prevent zooming out beyond 1:1
-                if (_transform.getMaxScaleOnAxis() * scale < 1) {
-                  scale = 1 / _transform.getMaxScaleOnAxis();
-                }
-                
-                // Apply panning
-                _transform = Matrix4.identity()
-                  ..translate(dx, dy)
-                  ..multiply(_transform);
-                
-                // Apply zooming
-                if (scale != 1.0) {
-                  _transform = Matrix4.identity()
-                    ..translate(details.localFocalPoint.dx, details.localFocalPoint.dy)
-                    ..scale(scale)
-                    ..translate(-details.localFocalPoint.dx, -details.localFocalPoint.dy)
-                    ..multiply(_transform);
-                }
-              }
-              _lastPanPosition = Point(details.localFocalPoint.dx, details.localFocalPoint.dy);
-            });
-          },
-        onTapDown: (details) {
-          final inverseTransform = Matrix4.inverted(_transform);
-          final transformedPoint = inverseTransform.transform3(Vector3(
-            details.localPosition.dx,
-            details.localPosition.dy,
-            0,
-          ));
-          final x = transformedPoint.x.round();
-          final y = transformedPoint.y.round();
-          togglePixel(x, y);
-        },
         child: CustomPaint(
           size: Size(_canvasWidth.toDouble(), _canvasHeight.toDouble()),
           painter: _PixelPainter(_pixels, _canvasWidth, _transform),
@@ -125,10 +122,9 @@ class _PixelPainterState extends State<PixelPainter> {
 
   void togglePixel(int x, int y) {
     if (x >= 0 && x < _canvasWidth && y >= 0 && y < _canvasHeight) {
-      setState(() {
-        int index = y * _canvasWidth + x;
-        _pixels[index] = (_pixels[index] == 0) ? 1 : 0;
-      });
+      int index = y * _canvasWidth + x;
+      _pixels[index] = (_pixels[index] == 0) ? 1 : 0;
+      setState(() {});
     }
   }
 }
