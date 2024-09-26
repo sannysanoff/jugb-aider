@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:vector_math/vector_math_64.dart' show Vector3;
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 void main() {
   runApp(const MyApp());
@@ -36,12 +37,50 @@ class _PixelPainterState extends State<PixelPainter> {
   Matrix4 _transform = Matrix4.identity();
   Offset? _lastPanPosition;
   Offset? _lastDrawPosition;
+  late WebSocketChannel _channel;
 
   @override
   void initState() {
     super.initState();
     _pixels = Uint8List(1000 * 1000);
     _fetchInitialState();
+    _connectWebSocket();
+  }
+
+  void _connectWebSocket() {
+    _channel = WebSocketChannel.connect(Uri.parse('wss://b.jugregator.org/ws'));
+    _channel.stream.listen((message) {
+      final data = jsonDecode(message);
+      _handleWebSocketMessage(data);
+    });
+  }
+
+  void _handleWebSocketMessage(Map<String, dynamic> data) {
+    if (data.containsKey('on')) {
+      _updatePixels(data['on'] as List<dynamic>, true);
+    }
+    if (data.containsKey('off')) {
+      _updatePixels(data['off'] as List<dynamic>, false);
+    }
+    setState(() {});
+  }
+
+  void _updatePixels(List<dynamic> coordinates, bool isOn) {
+    for (final coord in coordinates) {
+      final String coordStr = coord.toString().padLeft(6, '0');
+      final int y = int.parse(coordStr.substring(0, 3));
+      final int x = int.parse(coordStr.substring(3));
+      if (x >= 0 && x < _canvasWidth && y >= 0 && y < _canvasHeight) {
+        int index = y * _canvasWidth + x;
+        _pixels[index] = isOn ? 0 : 255;
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _channel.sink.close();
+    super.dispose();
   }
 
   Future<void> _fetchInitialState() async {
