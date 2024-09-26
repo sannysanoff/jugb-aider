@@ -98,11 +98,16 @@ class _PixelPainterState extends State<PixelPainter> {
   }
 
   void togglePixel(int x, int y) {
+    debugPrint('togglePixel called with x: $x, y: $y');
     // Check if the click is within the bounds of the canvas
     if (x >= 0 && x < _canvasWidth && y >= 0 && y < _canvasHeight) {
       setState(() {
-        _pixels[y * _canvasWidth + x] = (_pixels[y * _canvasWidth + x] == 0) ? 1 : 0; // Toggle pixel value
+        int index = y * _canvasWidth + x;
+        _pixels[index] = (_pixels[index] == 0) ? 1 : 0; // Toggle pixel value
+        debugPrint('Pixel at ($x, $y) toggled to ${_pixels[index]}');
       });
+    } else {
+      debugPrint('Pixel ($x, $y) is out of bounds');
     }
   }
 }
