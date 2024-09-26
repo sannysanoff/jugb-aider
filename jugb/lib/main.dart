@@ -50,6 +50,7 @@ class _PixelPainterState extends State<PixelPainter> {
   void _connectWebSocket() {
     _channel = WebSocketChannel.connect(Uri.parse('wss://b.jugregator.org/ws'));
     _channel.stream.listen((message) {
+      print('Received WebSocket message: $message');
       final data = jsonDecode(message);
       _handleWebSocketMessage(data);
     });
