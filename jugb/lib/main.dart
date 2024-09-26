@@ -6,6 +6,7 @@ import 'package:vector_math/vector_math_64.dart' show Vector3;
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:web_socket_channel/web_socket_channel.dart';
+import 'dart:async';
 
 void main() {
   runApp(const MyApp());
@@ -38,6 +39,8 @@ class _PixelPainterState extends State<PixelPainter> {
   Offset? _lastPanPosition;
   Offset? _lastDrawPosition;
   late WebSocketChannel _channel;
+  final _pixelUpdateQueue = <String>[];
+  Timer? _updateTimer;
 
   @override
   void initState() {
@@ -45,6 +48,32 @@ class _PixelPainterState extends State<PixelPainter> {
     _pixels = Uint8List(1000 * 1000);
     _fetchInitialState();
     _connectWebSocket();
+    _startUpdateTimer();
+  }
+
+  void _startUpdateTimer() {
+    _updateTimer = Timer.periodic(Duration(milliseconds: 200), (_) {
+      _processPixelUpdateQueue();
+    });
+  }
+
+  void _processPixelUpdateQueue() {
+    if (_pixelUpdateQueue.isNotEmpty) {
+      final pixelToUpdate = _pixelUpdateQueue.removeAt(0);
+      _sendPixelUpdate(pixelToUpdate);
+    }
+  }
+
+  void _sendPixelUpdate(String pixelCoord) async {
+    final url = Uri.parse('https://b.jugregator.org/set/$pixelCoord');
+    try {
+      final response = await http.post(url);
+      if (response.statusCode != 200) {
+        print('Failed to update pixel: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error updating pixel: $e');
+    }
   }
 
   void _connectWebSocket() {
@@ -81,6 +110,7 @@ class _PixelPainterState extends State<PixelPainter> {
   @override
   void dispose() {
     _channel.sink.close();
+    _updateTimer?.cancel();
     super.dispose();
   }
 
@@ -217,8 +247,14 @@ class _PixelPainterState extends State<PixelPainter> {
   void invertPixel(int x, int y) {
     if (x >= 0 && x < _canvasWidth && y >= 0 && y < _canvasHeight) {
       int index = y * _canvasWidth + x;
-      _pixels[index] = 255 - _pixels[index];  // Invert the color
+      _pixels[index] = 80;  // Set to 80 (will be drawn as red)
       setState(() {});
+      
+      // Add to update queue
+      String pixelCoord = '${y.toString().padLeft(3, '0')}${x.toString().padLeft(3, '0')}';
+      if (!_pixelUpdateQueue.contains(pixelCoord)) {
+        _pixelUpdateQueue.add(pixelCoord);
+      }
     }
   }
 }
@@ -236,10 +272,11 @@ class _PixelPainter extends CustomPainter {
 
     for (int y = 0; y < size.height.toInt(); y++) {
       for (int x = 0; x < canvasWidth; x++) {
-        final color = Color.fromRGBO(
-          pixels[y * canvasWidth + x],
-          pixels[y * canvasWidth + x],
-          pixels[y * canvasWidth + x],
+        final pixelValue = pixels[y * canvasWidth + x];
+        final color = pixelValue == 80 ? Colors.red : Color.fromRGBO(
+          pixelValue,
+          pixelValue,
+          pixelValue,
           1
         );
         final rect = Rect.fromLTWH(x.toDouble(), y.toDouble(), 1.0, 1.0);
