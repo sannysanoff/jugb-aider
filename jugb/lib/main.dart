@@ -35,7 +35,10 @@ class _PixelPainterState extends State<PixelPainter> {
   @override
   void initState() {
     super.initState();
-    _pixels = Uint8List(1000 * 1000)..fill(255);  // Initialize with white color
+    _pixels = Uint8List(1000 * 1000);
+    for (int i = 0; i < _pixels.length; i++) {
+      _pixels[i] = 255;  // Initialize with white color
+    }
   }
   Matrix4 _transform = Matrix4.identity();
   Offset? _lastPanPosition;
