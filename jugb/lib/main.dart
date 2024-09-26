@@ -366,17 +366,21 @@ class _PixelPainter extends CustomPainter {
       canvas.drawImage(cachedImage!, Offset.zero, Paint());
     } else {
       // Fallback to pixel-by-pixel drawing if image is not available
-      for (int y = 0; y < size.height.toInt(); y++) {
-        for (int x = 0; x < canvasWidth; x++) {
+      final int maxY = size.height.toInt().clamp(0, pixels.length ~/ (canvasWidth * 4) - 1);
+      final int maxX = canvasWidth.clamp(0, pixels.length ~/ 4 - 1);
+      for (int y = 0; y < maxY; y++) {
+        for (int x = 0; x < maxX; x++) {
           final index = (y * canvasWidth + x) * 4;
-          final color = Color.fromARGB(
-            pixels[index + 3],
-            pixels[index],
-            pixels[index + 1],
-            pixels[index + 2],
-          );
-          final rect = Rect.fromLTWH(x.toDouble(), y.toDouble(), 1.0, 1.0);
-          canvas.drawRect(rect, Paint()..color = color);
+          if (index + 3 < pixels.length) {
+            final color = Color.fromARGB(
+              pixels[index + 3],
+              pixels[index],
+              pixels[index + 1],
+              pixels[index + 2],
+            );
+            final rect = Rect.fromLTWH(x.toDouble(), y.toDouble(), 1.0, 1.0);
+            canvas.drawRect(rect, Paint()..color = color);
+          }
         }
       }
     }
