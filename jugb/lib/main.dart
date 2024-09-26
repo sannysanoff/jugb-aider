@@ -93,7 +93,7 @@ class _PixelPainterState extends State<PixelPainter> {
           painter: _PixelPainter(_pixels, _canvasWidth, _transform),
         ),
       ),
-    );
+    ));
   }
 
   void togglePixel(int x, int y) {
