@@ -33,6 +33,7 @@ class _PixelPainterState extends State<PixelPainter> {
   Uint8List _pixels = Uint8List(1000 * 1000);
   Matrix4 _transform = Matrix4.identity();
   Offset? _lastPanPosition;
+  Offset? _lastDrawPosition;
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +100,14 @@ class _PixelPainterState extends State<PixelPainter> {
                 ));
                 final x = transformedPoint.x.round();
                 final y = transformedPoint.y.round();
-                togglePixel(x, y);
+                
+                // Only invert pixel if we've moved to a new square
+                if (_lastDrawPosition == null || 
+                    x != _lastDrawPosition!.dx.round() || 
+                    y != _lastDrawPosition!.dy.round()) {
+                  invertPixel(x, y);
+                  _lastDrawPosition = Offset(x.toDouble(), y.toDouble());
+                }
               }
             }
           },
@@ -111,10 +119,10 @@ class _PixelPainterState extends State<PixelPainter> {
     ));
   }
 
-  void togglePixel(int x, int y) {
+  void invertPixel(int x, int y) {
     if (x >= 0 && x < _canvasWidth && y >= 0 && y < _canvasHeight) {
       int index = y * _canvasWidth + x;
-      _pixels[index] = (_pixels[index] == 0) ? 1 : 0;
+      _pixels[index] = 255 - _pixels[index];  // Invert the color
       setState(() {});
     }
   }
@@ -133,10 +141,14 @@ class _PixelPainter extends CustomPainter {
 
     for (int y = 0; y < size.height.toInt(); y++) {
       for (int x = 0; x < canvasWidth; x++) {
-        if (pixels[y * canvasWidth + x] == 1) {
-          final rect = Rect.fromLTWH(x.toDouble(), y.toDouble(), 1.0, 1.0);
-          canvas.drawRect(rect, Paint()..color = Colors.black);
-        }
+        final color = Color.fromRGBO(
+          pixels[y * canvasWidth + x],
+          pixels[y * canvasWidth + x],
+          pixels[y * canvasWidth + x],
+          1
+        );
+        final rect = Rect.fromLTWH(x.toDouble(), y.toDouble(), 1.0, 1.0);
+        canvas.drawRect(rect, Paint()..color = color);
       }
     }
 
