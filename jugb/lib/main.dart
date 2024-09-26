@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:typed_data';
 import 'dart:math' show Point;
 import 'package:vector_math/vector_math_64.dart' show Vector3;
@@ -37,11 +38,19 @@ class _PixelPainterState extends State<PixelPainter> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GestureDetector(
-        onScaleStart: (details) {
-          _lastPanPosition = Point(details.localFocalPoint.dx, details.localFocalPoint.dy);
+      body: Listener(
+        onPointerSignal: (pointerSignal) {
+          if (pointerSignal is PointerScrollEvent) {
+            print('Mouse wheel event detected:');
+            print('  Scroll delta: ${pointerSignal.scrollDelta}');
+            print('  Local position: ${pointerSignal.localPosition}');
+          }
         },
-        onScaleUpdate: (details) {
+        child: GestureDetector(
+          onScaleStart: (details) {
+            _lastPanPosition = Point(details.localFocalPoint.dx, details.localFocalPoint.dy);
+          },
+          onScaleUpdate: (details) {
           setState(() {
             if (_lastPanPosition != null) {
               final dx = details.localFocalPoint.dx - _lastPanPosition!.x;
