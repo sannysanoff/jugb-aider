@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>input_history-human</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="readable.css" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<p>create flutter project for macos desktop in this directory. call id
+jugb</p>
+<p>create flutter project for macos desktop in this directory. call id
+jugb. Do it as a call to flutter binary.</p>
+<p>create flutter project for macos desktop in this directory. call id
+jugb. Do it as a call to flutter binary. Don’t create files, only
+command</p>
+<p>/run flutter create –platforms=macos jugb</p>
+<p>/ask how to run on macos?</p>
+<p>/ask how to run on macos? using flutter command</p>
+<p>/add jugb/lib/main.dart</p>
+<p>remove all stuff from the main dart file. Add canvas where I can
+paint with mouse. Left mouse button will draw pixels. Middle button will
+scroll canvas. Wheel must zoom in and out. When zoomed, pixels show as a
+grid.</p>
+<p>/ask how state is maintained on canvas? canvas size should be fixed
+1000x1000 pixels, backed by array (bytes with 1/0)</p>
+<p>is state is maintained on canvas? canvas size should be fixed
+1000x1000 pixels, backed by array (bytes with 1/0)</p>
+<p>for some reason wheel is not working, please fix</p>
+<p>when i move, the pixel coordinates match the mouse clicks. However
+after I zoom, they stop to show at all after zoom, after click etc.
+Note: zoom must be made so that pixel under mouse must remain in place,
+like it’s normally done in the google maps application, for example.
+Mouse location is center for zoom transformation.</p>
+<p>looks that drawing routine for zoomed mode is not correct. Grid is
+drawn, but pixels are not drawn. Note: filled pixel from backing array
+must result in filled grid square.</p>
+<p>now pixels are displayed ok, but mouse click coordinate is not
+properly translated to the backing array coordinate space. Please
+fix.</p>
+<p>now pixels are displayed ok, no need to change drawing function. BUT!
+Mouse click coordinate is not properly translated to the backing array
+coordinate space, so array is changed in wrong place. Please fix. Take
+into account that mouse can click outside displayed array, so no changes
+must be done in this case.</p>
+<p>now pixels are displayed ok, DO NOT CHANGE drawing function. BUT!
+Mouse click coordinate is not properly translated to the backing array
+coordinate space, so array is changed in wrong place. Please fix. Take
+into account that mouse can click outside displayed array, so no changes
+must be done in this case.</p>
+<p>rename _drawPixel to togglePixel</p>
+<p>changes to clicking code seem to have no effect. Please ensure you
+transform coordinates prior to calling togglePixel</p>
+<p>you’re doing transformation but it does not look correct. Add
+printing code that logs click physical information, current scroll
+offset and scale, and write to array offset information. I’ll paste the
+result.</p>
+<p>/run wc -l ‘}’</p>
+<p>/run head jugb/lib/main.dart</p>
+<p>/run git stash</p>
+<p>/add jugb/lib/main.dart</p>
+<p>you’re doing transformation but it does not look correct. Add few
+logging code here and there, it will log click physical information,
+current scroll offset and scale, and write to array offset information.
+I’ll paste the result.</p>
+<p>/ask where the log output is written/</p>
+<p>/ask it is not printed in console during flutter run on macos. How to
+fix?</p>
+<p>/ask run -v does not help.</p>
+<p>replace log with debugPrint across the code</p>
+<p>I placed mouse around 200,200 and zoomed in. This is the result. I
+suspect, offset must move to negative, isn’t it? Based on the mouse
+coords, etc.: [+10550 ms] flutter: Scale: 1.4000244140625, Offset:
+Offset(1.6, 4.3)</p>
+<p>now panning by middle mouse button is broken. Panning is broke by any
+button.</p>
+<p>looks like you’re not dividing mouse coordinates by zoom factor when
+handling mouse clicks.</p>
+<p>your recent change does not have anything to do with my request. I
+zoomed in, and my pixel toggle does not happen under my mouse, but
+somewhere else.</p>
+<p>/model openrouter/anthropic/claude-3.5-sonnet</p>
+<p>I zoomed in, and my pixel toggle does not happen under my mouse, but
+somewhere else.</p>
+<p>/model claude-3-5-sonnet-20240620</p>
+<p>I zoomed in, and my pixel toggle does not happen under my mouse, but
+somewhere else.</p>
+<p>/add jugb/lib/main.dart</p>
+<p>/model claude-3-5-sonnet-20240620</p>
+<p>I zoomed in, and my pixel toggle does not happen under my mouse, but
+somewhere else.</p>
+<p>/add jugb/lib/main.dart</p>
+<p>I zoomed in, and my pixel toggle does not happen under my mouse, but
+somewhere else.</p>
+<p>please add logging using debugPrint and instruct the sequence for me
+to do. I will paste log here. Bug is still there, it’s not related to
+rounding.</p>
+<p>check maybe the UI already scales mouse event, and you need to handle
+it second time?</p>
+<p>wrong variable, from the output, is offset. My viewport size is 900+
+pixels by x. For two different zoom factors, I placed left top corner of
+grid in the middle position by x. Offset = 146, 166, depending on the
+zoom. It’s wrong.</p>
+<p>offset is still not correct. Look: corner of the grid is in the
+middle of the screen, while this: [ ] flutter: Current scale:
+1.4000244140625, offset: Offset(177.2, 0.3)</p>
+<p>please don’t use any flutter scrolling features, nor flutter
+viewports. Perform all transforms with Transform2D matrix. Don’t use
+offsets etc. Start with simple identity matrix.</p>
+<p>now implement scaling the matrix around the mouse point. Leave
+drawing routine simple.</p>
+<p>nothing happens on mouse wheel, add logging if event is coming?</p>
+<p>event is coming, nothing happens (no zoom). [ +45 ms] flutter: Mouse
+wheel event detected:</p>
+<p>prevent zooming out too far, 1:1 is enough</p>
+<p>all correct, but zooming happens not around the mouse pointers, but
+some wrong way. However, everything else is correct</p>
+<p>differentiate between dragging using middle mouse button, and drawing
+using left mouse button. Drawing must toggle pixels while mouse is
+moved. dragging with middle button must pan the screen</p>
+<p>if mouse motion happens to the same square second time without
+leaving it, don’t send it. Otherwise (wrongly) while I move mouse over
+the sqare, it’s toggling forth and back. Toggle should occur only on
+click. Otherwise, it’s usual “invert” operation.</p>
+<p>behavior is mostly correct. Single clicks are not handled for some
+reason.</p>
+<p>for some reason field starts with all black squares and gray
+grid.</p>
+<p>now take initial state from the web:
+https://b.jugregator.org/api/grid. You will receive base64-encoded
+string. Decode it. Then it will contain bitmask that specifies initial
+state. LSB of the first byte is (0,0). Then each 8 bits are next pixels,
+increasing x coordinate. Then next 8 bits. Etc. Remember 1000 x 1000
+canvas.</p>
+<p>now take initial state from the web:
+https://b.jugregator.org/api/grid. You will receive base64-encoded
+string. Decode it. Then it will contain bitmask that specifies initial
+state. LSB of the first byte is (0,0). Then each 8 bits are next pixels,
+increasing x coordinate. Then next 8 bits. Etc. Remember 1000 x 1000
+canvas.</p>
+<p>/run flutter pub add http</p>
+<p>(OS Error: Operation not permitted, errno = 1), this is macos
+restriction, something to add to Info.plist</p>
+<p>still error, maybe another OS permission: Connection failed (OS
+Error: Operation not permitted, errno = 1), address = b.jugregator.org,
+port = 443, uri=https://b.jugregator.org/</p>
+<p>also check Debug entitlements</p>
+<p>also please connect to the wss://b.jugregator.org/ws websocket. Here
+you’ll find messages like this:
+{“on”:[103899,101899,100899,99899,99898],“off”:[103896,103893,102892,103895,103894,103897,103898,101900,100900]}.
+This is %03d%03d of Y and X coordinates (Y first). Handle these updates
+and modify backing array and redraw when needed. “on” means pixel is
+turned on, off means pixel is cleared.</p>
+<p>/run flutter pub get</p>
+<p>please also print incoming messages</p>
+<p>now you’ll do following. When pixel is changed (toggled) by me,
+you’ll send http query (limit query rate to 5 queries per second, not
+more, use some kind of thread pool or queues). Query is following: it’s
+POST to following url: https://b.jugregator.org/set/399338 , where
+number is %03d%03d of Y, X coordinate in the backing array. Put some
+other value in array (say, 80). Draw such pixel in red. When websocket
+data comes, update 80 with proper 0 or 1.</p>
+<p>flutter: Received WebSocket message:
+{“on”:[104894,104895,104896],“off”:[103897,103898,102899,101900,100900,99901,98901,97901,96901,95901,94901,93901,92901,91901,90900,89899,88898]}</p>
+<p>please change handling so it’s not more than 4 http requests in
+flight at any time.</p>
+<p>don’t render grid lines if zoom &lt; 10</p>
+<p>my frame rate is very slow. Maybe there’s a way to batch drawing to
+speed up repaint?</p>
+<p>don’t forget to invalidate / whatever, when data has been loaded or
+updated via websocket</p>
+<p>when I paint with a mouse, pixel must become red (value 80) and then,
+after websocket update, black or white. Please fix.</p>
+<p>lib/main.dart:200:8: Error: ’_updatePixels’ is already declared in
+this scope.</p>
+<p>it is being painted by gray, not red, please fix</p>
+<p>/ask is _pixels in RGBA (4 bytes per pixel) or 1 byte per pixel? I’m
+lost.</p>
+<p>make sure you use one format everywhere,probably RGBA, if it’s faster
+for rendering. So, initialize image and keep only one array across the
+application.</p>
+<p>if for some reason pixel is failed to update, please re-schedule http
+request for later, and retry using same rate.</p>
+<p>remove debug output</p>
+</body>
+</html>
