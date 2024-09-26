@@ -45,21 +45,31 @@ class _PixelPainterState extends State<PixelPainter> {
   }
 
   Future<void> _fetchInitialState() async {
-    final response = await http.get(Uri.parse('https://b.jugregator.org/api/grid'));
-    if (response.statusCode == 200) {
-      final decodedBytes = base64.decode(response.body);
-      for (int i = 0; i < decodedBytes.length; i++) {
-        for (int bit = 0; bit < 8; bit++) {
-          int pixelIndex = i * 8 + bit;
-          if (pixelIndex < _pixels.length) {
-            _pixels[pixelIndex] = ((decodedBytes[i] >> bit) & 1) == 1 ? 0 : 255;
+    try {
+      final response = await http.get(Uri.parse('https://b.jugregator.org/api/grid'));
+      if (response.statusCode == 200) {
+        final decodedBytes = base64.decode(response.body);
+        for (int i = 0; i < decodedBytes.length; i++) {
+          for (int bit = 0; bit < 8; bit++) {
+            int pixelIndex = i * 8 + bit;
+            if (pixelIndex < _pixels.length) {
+              _pixels[pixelIndex] = ((decodedBytes[i] >> bit) & 1) == 1 ? 0 : 255;
+            }
           }
         }
+      } else {
+        print('Failed to load initial state: ${response.statusCode}');
+        _initializeWhiteCanvas();
       }
-      setState(() {});
-    } else {
-      print('Failed to load initial state');
+    } catch (e) {
+      print('Error fetching initial state: $e');
+      _initializeWhiteCanvas();
     }
+    setState(() {});
+  }
+
+  void _initializeWhiteCanvas() {
+    _pixels.fillRange(0, _pixels.length, 255);
   }
 
   @override
