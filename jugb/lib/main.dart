@@ -46,14 +46,24 @@ class _PixelPainterState extends State<PixelPainter> {
             if (_lastPanPosition != null) {
               final dx = details.localFocalPoint.dx - _lastPanPosition!.x;
               final dy = details.localFocalPoint.dy - _lastPanPosition!.y;
-              final scaleDiff = details.scale;
-              final focalPoint = details.localFocalPoint;
-              _transform = Matrix4.identity()
-                ..translate(focalPoint.dx, focalPoint.dy)
-                ..scale(scaleDiff)
-                ..translate(-focalPoint.dx, -focalPoint.dy)
-                ..translate(dx, dy)
-                ..multiply(_transform);
+              final scale = details.scale;
+              
+              // Calculate the focal point in the canvas coordinate system
+              final focalPointInCanvas = _transform.inverted().transform3(Vector3(
+                details.localFocalPoint.dx,
+                details.localFocalPoint.dy,
+                0,
+              ));
+
+              // Create a new transform that scales around the focal point
+              final newTransform = Matrix4.identity()
+                ..translate(focalPointInCanvas.x, focalPointInCanvas.y)
+                ..scale(scale)
+                ..translate(-focalPointInCanvas.x, -focalPointInCanvas.y)
+                ..translate(dx, dy);
+
+              // Combine the new transform with the existing one
+              _transform = newTransform * _transform;
             }
             _lastPanPosition = Point(details.localFocalPoint.dx, details.localFocalPoint.dy);
           });
