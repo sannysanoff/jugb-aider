@@ -40,29 +40,44 @@ class _PixelPainterState extends State<PixelPainter> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GestureDetector(
-        onScaleStart: (details) {
-          _lastPosition = details.localFocalPoint;
-        },
-        onScaleUpdate: (details) {
-          if (_lastPosition != null) {
+      body: Listener(
+        onPointerSignal: (pointerSignal) {
+          if (pointerSignal is PointerScrollEvent) {
             setState(() {
-              _offset += details.localFocalPoint - _lastPosition!;
-              _scale *= details.scale;
-              _lastPosition = details.localFocalPoint;
+              double zoomFactor = 0.1;
+              _scale += pointerSignal.scrollDelta.dy * zoomFactor * -1; // Zoom in/out
+              _scale = _scale.clamp(0.1, 10.0); // Limit zoom level
+
+              // Adjust offset based on zoom origin
+              Offset focalPoint = pointerSignal.localPosition;
+              _offset = _offset + (focalPoint - _offset) * (1 - _scale);
             });
           }
         },
-        onTapDown: (details) {
-          _drawPixel(details.localPosition);
-        },
-        child: Transform(
-          transform: Matrix4.identity()
-            ..translate(_offset.dx, _offset.dy)
-            ..scale(_scale),
-          child: CustomPaint(
-            size: Size(_canvasWidth.toDouble(), _canvasHeight.toDouble()), // Fixed size
-            painter: _PixelPainter(_pixels, _canvasWidth, _scale),
+        child: GestureDetector(
+          onScaleStart: (details) {
+            _lastPosition = details.localFocalPoint;
+          },
+          onScaleUpdate: (details) {
+            if (_lastPosition != null) {
+              setState(() {
+                _offset += details.localFocalPoint - _lastPosition!;
+                _scale *= details.scale;
+                _lastPosition = details.localFocalPoint;
+              });
+            }
+          },
+          onTapDown: (details) {
+            _drawPixel(details.localPosition);
+          },
+          child: Transform(
+            transform: Matrix4.identity()
+              ..translate(_offset.dx, _offset.dy)
+              ..scale(_scale),
+            child: CustomPaint(
+              size: Size(_canvasWidth.toDouble(), _canvasHeight.toDouble()), // Fixed size
+              painter: _PixelPainter(_pixels, _canvasWidth, _scale),
+            ),
           ),
         ),
       ),
