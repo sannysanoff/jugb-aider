@@ -87,10 +87,11 @@ class _PixelPainterState extends State<PixelPainter> {
   }
 
   void _drawPixel(Offset position) {
-    // Account for scale and offset when calculating pixel coordinates
+    // Apply inverse transformation to get correct pixel coordinates
     final x = ((position.dx - _offset.dx) / _scale).round();
     final y = ((position.dy - _offset.dy) / _scale).round();
 
+    // Check if the click is within the bounds of the canvas
     if (x >= 0 && x < _canvasWidth && y >= 0 && y < _canvasHeight) {
       setState(() {
         _pixels[y * _canvasWidth + x] = 1; // Set pixel to "on" (1)
