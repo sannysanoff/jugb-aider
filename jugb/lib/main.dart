@@ -68,10 +68,6 @@ class _PixelPainterState extends State<PixelPainter> {
 
   Future<void> _updateCachedImage() async {
     try {
-      print('Updating cached image');
-      print('Pixel data length: ${_pixels.length}');
-      print('Canvas dimensions: $_canvasWidth x $_canvasHeight');
-      
       // Ensure pixel data is valid and convert to RGBA if necessary
       Uint8List rgbaPixels;
       if (_pixels.length == _canvasWidth * _canvasHeight) {
@@ -96,22 +92,13 @@ class _PixelPainterState extends State<PixelPainter> {
         _canvasWidth,
         _canvasHeight,
         ui.PixelFormat.rgba8888,
-        (ui.Image? img) {
-          if (img == null) {
-            completer.completeError('Failed to decode image');
-          } else {
-            print('Image decoded successfully');
-            completer.complete(img);
-          }
-        },
+        completer.complete,
       );
       
       _cachedImage = await completer.future;
-      print('Cached image updated');
       _needsImageUpdate = false;
       setState(() {});
     } catch (e) {
-      print('Error in _updateCachedImage: $e');
       _cachedImage = null;
       _needsImageUpdate = true;
       // Add a delay before retrying
@@ -163,7 +150,6 @@ class _PixelPainterState extends State<PixelPainter> {
   void _connectWebSocket() {
     _channel = WebSocketChannel.connect(Uri.parse('wss://b.jugregator.org/ws'));
     _channel.stream.listen((message) {
-      print('Received WebSocket message: $message');
       final data = jsonDecode(message);
       _handleWebSocketMessage(data);
     });
@@ -221,11 +207,9 @@ class _PixelPainterState extends State<PixelPainter> {
           }
         }
       } else {
-        print('Failed to load initial state: ${response.statusCode}');
         _initializeWhiteCanvas();
       }
     } catch (e) {
-      print('Error fetching initial state: $e');
       _initializeWhiteCanvas();
     }
     _needsImageUpdate = true;
@@ -247,19 +231,15 @@ class _PixelPainterState extends State<PixelPainter> {
       body: Listener(
         onPointerSignal: (pointerSignal) {
           if (pointerSignal is PointerScrollEvent) {
-            print('Mouse wheel event detected:');
-            print('  Scroll delta: ${pointerSignal.scrollDelta}');
-            print('  Local position: ${pointerSignal.localPosition}');
-            
             setState(() {
               // Determine zoom factor based on scroll direction
               double zoomFactor = 1 - (pointerSignal.scrollDelta.dy / 500);
-              
+            
               // Prevent zooming out beyond 1:1
               if (_transform.getMaxScaleOnAxis() * zoomFactor < 1) {
                 zoomFactor = 1 / _transform.getMaxScaleOnAxis();
               }
-              
+            
               // Calculate the focal point in the canvas coordinate system
               final focalPointInCanvas = _transform.clone()..invert();
               final transformedPoint = focalPointInCanvas.transform3(Vector3(
