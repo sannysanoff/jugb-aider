@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart'; // Import for PointerScrollEvent
 import 'package:flutter/material.dart';
 import 'dart:typed_data';
 
@@ -51,6 +52,8 @@ class _PixelPainterState extends State<PixelPainter> {
               // Adjust offset based on zoom origin
               Offset focalPoint = pointerSignal.localPosition;
               _offset = _offset + (focalPoint - _offset) * (1 - _scale);
+
+
             });
           }
         },
