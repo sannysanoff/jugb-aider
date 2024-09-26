@@ -51,7 +51,7 @@ class _PixelPainterState extends State<PixelPainter> {
   @override
   void initState() {
     super.initState();
-    _pixels = Uint8List(1000 * 1000);
+    _pixels = Uint8List(_canvasWidth * _canvasHeight * 4);
     _fetchInitialState();
     _connectWebSocket();
     _startUpdateTimer();
@@ -181,18 +181,12 @@ class _PixelPainterState extends State<PixelPainter> {
       final int y = int.parse(coordStr.substring(0, 3));
       final int x = int.parse(coordStr.substring(3));
       if (x >= 0 && x < _canvasWidth && y >= 0 && y < _canvasHeight) {
-        int index = y * _canvasWidth + x;
-        if (_pixels.length == _canvasWidth * _canvasHeight) {
-          // Grayscale format
-          _pixels[index] = isOn ? 0 : 255;
-        } else if (_pixels.length == _canvasWidth * _canvasHeight * 4) {
-          // RGBA format
-          index *= 4;
-          _pixels[index] = isOn ? 0 : 255;     // Red
-          _pixels[index + 1] = isOn ? 0 : 255; // Green
-          _pixels[index + 2] = isOn ? 0 : 255; // Blue
-          _pixels[index + 3] = 255; // Alpha (fully opaque)
-        }
+        int index = (y * _canvasWidth + x) * 4;
+        int color = isOn ? 0 : 255;
+        _pixels[index] = color;     // Red
+        _pixels[index + 1] = color; // Green
+        _pixels[index + 2] = color; // Blue
+        _pixels[index + 3] = 255;   // Alpha (fully opaque)
       }
     }
   }
@@ -211,9 +205,13 @@ class _PixelPainterState extends State<PixelPainter> {
         final decodedBytes = base64.decode(response.body);
         for (int i = 0; i < decodedBytes.length; i++) {
           for (int bit = 0; bit < 8; bit++) {
-            int pixelIndex = i * 8 + bit;
+            int pixelIndex = (i * 8 + bit) * 4;
             if (pixelIndex < _pixels.length) {
-              _pixels[pixelIndex] = ((decodedBytes[i] >> bit) & 1) == 1 ? 0 : 255;
+              int color = ((decodedBytes[i] >> bit) & 1) == 1 ? 0 : 255;
+              _pixels[pixelIndex] = color;     // R
+              _pixels[pixelIndex + 1] = color; // G
+              _pixels[pixelIndex + 2] = color; // B
+              _pixels[pixelIndex + 3] = 255;   // A (fully opaque)
             }
           }
         }
@@ -230,7 +228,12 @@ class _PixelPainterState extends State<PixelPainter> {
   }
 
   void _initializeWhiteCanvas() {
-    _pixels.fillRange(0, _pixels.length, 255);
+    for (int i = 0; i < _pixels.length; i += 4) {
+      _pixels[i] = 255;     // R
+      _pixels[i + 1] = 255; // G
+      _pixels[i + 2] = 255; // B
+      _pixels[i + 3] = 255; // A
+    }
   }
 
   @override
@@ -337,18 +340,12 @@ class _PixelPainterState extends State<PixelPainter> {
 
   void invertPixel(int x, int y) {
     if (x >= 0 && x < _canvasWidth && y >= 0 && y < _canvasHeight) {
-      int index = y * _canvasWidth + x;
-      if (_pixels.length == _canvasWidth * _canvasHeight) {
-        // Grayscale format
-        _pixels[index] = 255; // Set to red (full intensity)
-      } else if (_pixels.length == _canvasWidth * _canvasHeight * 4) {
-        // RGBA format
-        index *= 4;
-        _pixels[index] = 255;    // Red (full intensity)
-        _pixels[index + 1] = 0;  // Green
-        _pixels[index + 2] = 0;  // Blue
-        _pixels[index + 3] = 255; // Alpha (fully opaque)
-      }
+      int index = (y * _canvasWidth + x) * 4;
+      _pixels[index] = 255;    // Red (full intensity)
+      _pixels[index + 1] = 0;  // Green
+      _pixels[index + 2] = 0;  // Blue
+      _pixels[index + 3] = 255; // Alpha (fully opaque)
+      
       _needsImageUpdate = true;
       setState(() {});
       
