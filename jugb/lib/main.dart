@@ -52,8 +52,6 @@ class _PixelPainterState extends State<PixelPainter> {
               // Adjust offset based on zoom origin
               Offset focalPoint = pointerSignal.localPosition;
               _offset = (focalPoint - (focalPoint - _offset) / _scale * _scale);
-
-
             });
           }
         },
@@ -111,18 +109,16 @@ class _PixelPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.black
-      ..strokeWidth = 1.0 / scale;
-
     for (int y = 0; y < size.height.toInt(); y++) {
       for (int x = 0; x < canvasWidth; x++) {
         if (pixels[y * canvasWidth + x] == 1) { // Check if pixel is "on"
-          canvas.drawCircle(Offset(x.toDouble(), y.toDouble()), 0.5 / scale, paint); // Draw a small circle for each pixel
+          // Fill grid square instead of drawing a circle
+          final rect = Rect.fromLTWH(x.toDouble(), y.toDouble(), 1.0, 1.0);
+          final scaledRect = rect.shift(_offset).scale(_scale, _scale);
+          canvas.drawRect(scaledRect, Paint()..color = Colors.black);
         }
       }
     }
-
 
     // Draw grid lines (when zoomed in)
     if (scale > 1.0) {
