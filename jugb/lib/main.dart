@@ -38,30 +38,24 @@ class _PixelPainterState extends State<PixelPainter> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: GestureDetector(
-        onPanStart: (details) {
-          _lastPanPosition = Point(details.localPosition.dx, details.localPosition.dy);
-        },
-        onPanUpdate: (details) {
-          if (_lastPanPosition != null) {
-            final dx = details.localPosition.dx - _lastPanPosition!.x;
-            final dy = details.localPosition.dy - _lastPanPosition!.y;
-            setState(() {
-              _transform = Matrix4.identity()
-                ..multiply(_transform)
-                ..translate(dx, dy);
-            });
-            _lastPanPosition = Point(details.localPosition.dx, details.localPosition.dy);
-          }
+        onScaleStart: (details) {
+          _lastPanPosition = Point(details.localFocalPoint.dx, details.localFocalPoint.dy);
         },
         onScaleUpdate: (details) {
           setState(() {
-            final scaleDiff = details.scale;
-            final focalPoint = details.localFocalPoint;
-            _transform = Matrix4.identity()
-              ..translate(focalPoint.dx, focalPoint.dy)
-              ..scale(scaleDiff)
-              ..translate(-focalPoint.dx, -focalPoint.dy)
-              ..multiply(_transform);
+            if (_lastPanPosition != null) {
+              final dx = details.localFocalPoint.dx - _lastPanPosition!.x;
+              final dy = details.localFocalPoint.dy - _lastPanPosition!.y;
+              final scaleDiff = details.scale;
+              final focalPoint = details.localFocalPoint;
+              _transform = Matrix4.identity()
+                ..translate(focalPoint.dx, focalPoint.dy)
+                ..scale(scaleDiff)
+                ..translate(-focalPoint.dx, -focalPoint.dy)
+                ..translate(dx, dy)
+                ..multiply(_transform);
+            }
+            _lastPanPosition = Point(details.localFocalPoint.dx, details.localFocalPoint.dy);
           });
         },
         onTapDown: (details) {
