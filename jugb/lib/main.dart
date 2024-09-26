@@ -296,16 +296,18 @@ class _PixelPainter extends CustomPainter {
       }
     }
 
-    // Draw grid lines
-    final gridPaint = Paint()
-      ..color = Colors.grey
-      ..strokeWidth = 0.1;
+    // Draw grid lines only if zoom level is 10 or greater
+    if (transform.getMaxScaleOnAxis() >= 10) {
+      final gridPaint = Paint()
+        ..color = Colors.grey
+        ..strokeWidth = 0.1;
 
-    for (double x = 0; x <= size.width; x += 1.0) {
-      canvas.drawLine(Offset(x, 0), Offset(x, size.height), gridPaint);
-    }
-    for (double y = 0; y <= size.height; y += 1.0) {
-      canvas.drawLine(Offset(0, y), Offset(size.width, y), gridPaint);
+      for (double x = 0; x <= size.width; x += 1.0) {
+        canvas.drawLine(Offset(x, 0), Offset(x, size.height), gridPaint);
+      }
+      for (double y = 0; y <= size.height; y += 1.0) {
+        canvas.drawLine(Offset(0, y), Offset(size.width, y), gridPaint);
+      }
     }
   }
 
