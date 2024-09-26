@@ -55,7 +55,7 @@ class _PixelPainterState extends State<PixelPainter> {
               }
               
               // Calculate the focal point in the canvas coordinate system
-              final focalPointInCanvas = _transform.invert().transform3(Vector3(
+              final focalPointInCanvas = _transform.inverted().transform(Vector3(
                 pointerSignal.localPosition.dx,
                 pointerSignal.localPosition.dy,
                 0,
