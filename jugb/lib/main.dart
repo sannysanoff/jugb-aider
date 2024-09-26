@@ -47,7 +47,12 @@ class _PixelPainterState extends State<PixelPainter> {
             
             setState(() {
               // Determine zoom factor based on scroll direction
-              final zoomFactor = 1 - (pointerSignal.scrollDelta.dy / 100);
+              double zoomFactor = 1 - (pointerSignal.scrollDelta.dy / 100);
+              
+              // Prevent zooming out beyond 1:1
+              if (_transform.getMaxScaleOnAxis() * zoomFactor < 1) {
+                zoomFactor = 1 / _transform.getMaxScaleOnAxis();
+              }
               
               // Calculate the focal point in the canvas coordinate system
               final focalPointInCanvas = Matrix4.inverted(_transform).transform3(Vector3(
@@ -76,7 +81,12 @@ class _PixelPainterState extends State<PixelPainter> {
             if (_lastPanPosition != null) {
               final dx = details.localFocalPoint.dx - _lastPanPosition!.x;
               final dy = details.localFocalPoint.dy - _lastPanPosition!.y;
-              final scale = details.scale;
+              double scale = details.scale;
+              
+              // Prevent zooming out beyond 1:1
+              if (_transform.getMaxScaleOnAxis() * scale < 1) {
+                scale = 1 / _transform.getMaxScaleOnAxis();
+              }
               
               // Calculate the focal point in the canvas coordinate system
               final focalPointInCanvas = Matrix4.inverted(_transform).transform3(Vector3(
