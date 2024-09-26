@@ -76,13 +76,18 @@ class _PixelPainterState extends State<PixelPainter> {
 
           },
           onTapDown: (details) {
-            // Apply inverse transformation to get correct pixel coordinates
-            final x = ((details.localPosition.dx - _offset.dx) / _scale).round();
-            final y = ((details.localPosition.dy - _offset.dy) / _scale).round();
+            // Use raw coordinates without applying scale or offset
+            final x = details.localPosition.dx.round();
+            final y = details.localPosition.dy.round();
 
             debugPrint('Tap detected at local position: ${details.localPosition}');
-            debugPrint('Calculated pixel coordinates: x: $x, y: $y');
+            debugPrint('Raw pixel coordinates: x: $x, y: $y');
             debugPrint('Current scale: $_scale, offset: $_offset');
+
+            // Calculate scaled coordinates for comparison
+            final scaledX = ((details.localPosition.dx - _offset.dx) / _scale).round();
+            final scaledY = ((details.localPosition.dy - _offset.dy) / _scale).round();
+            debugPrint('Scaled pixel coordinates: x: $scaledX, y: $scaledY');
 
             togglePixel(x, y);
           },
