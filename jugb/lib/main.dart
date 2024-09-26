@@ -30,7 +30,13 @@ class PixelPainter extends StatefulWidget {
 class _PixelPainterState extends State<PixelPainter> {
   final int _canvasWidth = 1000;
   final int _canvasHeight = 1000;
-  Uint8List _pixels = Uint8List(1000 * 1000);
+  late Uint8List _pixels;
+
+  @override
+  void initState() {
+    super.initState();
+    _pixels = Uint8List(1000 * 1000)..fill(255);  // Initialize with white color
+  }
   Matrix4 _transform = Matrix4.identity();
   Offset? _lastPanPosition;
   Offset? _lastDrawPosition;
