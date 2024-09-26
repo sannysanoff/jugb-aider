@@ -47,7 +47,7 @@ class _PixelPainterState extends State<PixelPainter> {
             
             setState(() {
               // Determine zoom factor based on scroll direction
-              double zoomFactor = 1 - (pointerSignal.scrollDelta.dy / 100);
+              double zoomFactor = 1 - (pointerSignal.scrollDelta.dy / 500);
               
               // Prevent zooming out beyond 1:1
               if (_transform.getMaxScaleOnAxis() * zoomFactor < 1) {
@@ -55,20 +55,18 @@ class _PixelPainterState extends State<PixelPainter> {
               }
               
               // Calculate the focal point in the canvas coordinate system
-              final focalPointInCanvas = Matrix4.inverted(_transform).transform3(Vector3(
+              final focalPointInCanvas = _transform.invert().transform3(Vector3(
                 pointerSignal.localPosition.dx,
                 pointerSignal.localPosition.dy,
                 0,
               ));
 
-              // Create a new transform that scales around the focal point
-              final newTransform = Matrix4.identity()
-                ..translate(focalPointInCanvas.x, focalPointInCanvas.y)
+              // Apply zooming
+              _transform = Matrix4.identity()
+                ..translate(pointerSignal.localPosition.dx, pointerSignal.localPosition.dy)
                 ..scale(zoomFactor)
-                ..translate(-focalPointInCanvas.x, -focalPointInCanvas.y);
-
-              // Combine the new transform with the existing one
-              _transform = newTransform * _transform;
+                ..translate(-pointerSignal.localPosition.dx, -pointerSignal.localPosition.dy)
+                ..multiply(_transform);
             });
           }
         },
@@ -77,37 +75,34 @@ class _PixelPainterState extends State<PixelPainter> {
             _lastPanPosition = Point(details.localFocalPoint.dx, details.localFocalPoint.dy);
           },
           onScaleUpdate: (details) {
-          setState(() {
-            if (_lastPanPosition != null) {
-              final dx = details.localFocalPoint.dx - _lastPanPosition!.x;
-              final dy = details.localFocalPoint.dy - _lastPanPosition!.y;
-              double scale = details.scale;
-              
-              // Prevent zooming out beyond 1:1
-              if (_transform.getMaxScaleOnAxis() * scale < 1) {
-                scale = 1 / _transform.getMaxScaleOnAxis();
+            setState(() {
+              if (_lastPanPosition != null) {
+                final dx = details.localFocalPoint.dx - _lastPanPosition!.x;
+                final dy = details.localFocalPoint.dy - _lastPanPosition!.y;
+                double scale = details.scale;
+                
+                // Prevent zooming out beyond 1:1
+                if (_transform.getMaxScaleOnAxis() * scale < 1) {
+                  scale = 1 / _transform.getMaxScaleOnAxis();
+                }
+                
+                // Apply panning
+                _transform = Matrix4.identity()
+                  ..translate(dx, dy)
+                  ..multiply(_transform);
+                
+                // Apply zooming
+                if (scale != 1.0) {
+                  _transform = Matrix4.identity()
+                    ..translate(details.localFocalPoint.dx, details.localFocalPoint.dy)
+                    ..scale(scale)
+                    ..translate(-details.localFocalPoint.dx, -details.localFocalPoint.dy)
+                    ..multiply(_transform);
+                }
               }
-              
-              // Calculate the focal point in the canvas coordinate system
-              final focalPointInCanvas = Matrix4.inverted(_transform).transform3(Vector3(
-                details.localFocalPoint.dx,
-                details.localFocalPoint.dy,
-                0,
-              ));
-
-              // Create a new transform that scales around the focal point
-              final newTransform = Matrix4.identity()
-                ..translate(focalPointInCanvas.x, focalPointInCanvas.y)
-                ..scale(scale)
-                ..translate(-focalPointInCanvas.x, -focalPointInCanvas.y)
-                ..translate(dx, dy);
-
-              // Combine the new transform with the existing one
-              _transform = newTransform * _transform;
-            }
-            _lastPanPosition = Point(details.localFocalPoint.dx, details.localFocalPoint.dy);
-          });
-        },
+              _lastPanPosition = Point(details.localFocalPoint.dx, details.localFocalPoint.dy);
+            });
+          },
         onTapDown: (details) {
           final inverseTransform = Matrix4.inverted(_transform);
           final transformedPoint = inverseTransform.transform3(Vector3(
