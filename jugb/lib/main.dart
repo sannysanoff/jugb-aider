@@ -65,26 +65,21 @@ class _PixelPainterState extends State<PixelPainter> {
         child: GestureDetector(
           onScaleStart: (details) {
             _lastPosition = details.localFocalPoint;
-            debugPrint("onScaleStart: ${details.localFocalPoint}"); // Changed to debugPrint
           },
           onScaleUpdate: (details) {
-            if (_lastPosition != null) {
               setState(() {
-                double previousScale = _scale;
-                _scale *= details.scale;
-                _offset = details.localFocalPoint - (details.localFocalPoint - _offset) * (_scale / previousScale);
-                _lastPosition = details.localFocalPoint;
-                debugPrint("Scale: $_scale, Offset: $_offset"); // Changed to debugPrint
+                if (_lastPosition != null) {
+                  _offset += details.localFocalPoint - _lastPosition!;
+                  _lastPosition = details.localFocalPoint;
+                }
               });
-            }
+
           },
           onTapDown: (details) {
             // Apply inverse transformation to get correct pixel coordinates
             final x = ((details.localPosition.dx - _offset.dx) / _scale).round();
             final y = ((details.localPosition.dy - _offset.dy) / _scale).round();
 
-            debugPrint("TapDown Local: ${details.localPosition}, Global: ${details.globalPosition}, Scale: $_scale, Offset: $_offset"); // Changed to debugPrint
-            debugPrint("Calculated pixel x: $x, y: $y"); // Changed to debugPrint
 
             togglePixel(x, y);
           },
