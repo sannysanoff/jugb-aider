@@ -78,7 +78,7 @@ class _PixelPainterState extends State<PixelPainter> {
               ..scale(_scale),
             child: CustomPaint(
               size: Size(_canvasWidth.toDouble(), _canvasHeight.toDouble()), // Fixed size
-              painter: _PixelPainter(_pixels, _canvasWidth, _scale),
+              painter: _PixelPainter(_pixels, _canvasWidth, _scale, _offset),
             ),
           ),
         ),
@@ -104,32 +104,37 @@ class _PixelPainter extends CustomPainter {
   final Uint8List pixels;
   final int canvasWidth;
   final double scale;
+  final Offset offset;
 
-  _PixelPainter(this.pixels, this.canvasWidth, this.scale);
+  _PixelPainter(this.pixels, this.canvasWidth, this.scale, this.offset);
 
   @override
   void paint(Canvas canvas, Size size) {
+    // Apply the transformations to the canvas
+    canvas.translate(offset.dx, offset.dy);
+    canvas.scale(scale);
+
     for (int y = 0; y < size.height.toInt(); y++) {
       for (int x = 0; x < canvasWidth; x++) {
         if (pixels[y * canvasWidth + x] == 1) { // Check if pixel is "on"
-          // Fill grid square instead of drawing a circle
+          // Fill grid square
           final rect = Rect.fromLTWH(x.toDouble(), y.toDouble(), 1.0, 1.0);
-          final scaledRect = rect.shift(_offset).scale(_scale, _scale);
-          canvas.drawRect(scaledRect, Paint()..color = Colors.black);
+          canvas.drawRect(rect, Paint()..color = Colors.black);
         }
       }
     }
 
-    // Draw grid lines (when zoomed in)
+
+    // Draw grid lines (when zoomed in) - adjust for scale
     if (scale > 1.0) {
       final gridPaint = Paint()
         ..color = Colors.grey
-        ..strokeWidth = 0.5 / scale;
+        ..strokeWidth = 0.5 / scale; // Adjust stroke width based on scale
 
-      for (double x = 0; x < size.width; x += 1.0) {
+      for (double x = 0; x <= size.width; x += 1.0) {
         canvas.drawLine(Offset(x, 0), Offset(x, size.height), gridPaint);
       }
-      for (double y = 0; y < size.height; y += 1.0) {
+      for (double y = 0; y <= size.height; y += 1.0) {
         canvas.drawLine(Offset(0, y), Offset(size.width, y), gridPaint);
       }
     }
