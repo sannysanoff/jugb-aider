@@ -101,7 +101,7 @@ class _PixelPainterState extends State<PixelPainter> {
     // Check if the click is within the bounds of the canvas
     if (x >= 0 && x < _canvasWidth && y >= 0 && y < _canvasHeight) {
       setState(() {
-        _pixels[y * _canvasWidth + x] = 1; // Set pixel to "on" (1)
+        _pixels[y * _canvasWidth + x] = (_pixels[y * _canvasWidth + x] == 0) ? 1 : 0; // Toggle pixel value
       });
     }
   }
