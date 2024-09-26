@@ -2,7 +2,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:typed_data';
-import 'dart:math' show Point;
 import 'package:vector_math/vector_math_64.dart' show Vector3;
 
 void main() {
@@ -33,7 +32,7 @@ class _PixelPainterState extends State<PixelPainter> {
   final int _canvasHeight = 1000;
   Uint8List _pixels = Uint8List(1000 * 1000);
   Matrix4 _transform = Matrix4.identity();
-  Point<double>? _lastPanPosition;
+  Offset? _lastPanPosition;
 
   @override
   Widget build(BuildContext context) {
@@ -71,46 +70,38 @@ class _PixelPainterState extends State<PixelPainter> {
             });
           }
         },
-        child: RawGestureDetector(
-          gestures: <Type, GestureRecognizerFactory>{
-            PanGestureRecognizer: GestureRecognizerFactoryWithHandlers<PanGestureRecognizer>(
-              () => PanGestureRecognizer(),
-              (PanGestureRecognizer instance) {
-                instance
-                  ..onStart = (details) {
-                    if (details.kind == PointerDeviceKind.mouse &&
-                        details.buttons == kMiddleMouseButton) {
-                      _lastPanPosition = details.localPosition;
-                    }
-                  }
-                  ..onUpdate = (details) {
-                    if (details.kind == PointerDeviceKind.mouse) {
-                      if (details.buttons == kMiddleMouseButton) {
-                        // Middle mouse button: pan
-                        setState(() {
-                          final dx = details.localPosition.dx - _lastPanPosition!.dx;
-                          final dy = details.localPosition.dy - _lastPanPosition!.dy;
-                          _transform = Matrix4.identity()
-                            ..translate(dx, dy)
-                            ..multiply(_transform);
-                          _lastPanPosition = details.localPosition;
-                        });
-                      } else if (details.buttons == kPrimaryMouseButton) {
-                        // Left mouse button: draw
-                        final inverseTransform = Matrix4.inverted(_transform);
-                        final transformedPoint = inverseTransform.transform3(Vector3(
-                          details.localPosition.dx,
-                          details.localPosition.dy,
-                          0,
-                        ));
-                        final x = transformedPoint.x.round();
-                        final y = transformedPoint.y.round();
-                        togglePixel(x, y);
-                      }
-                    }
-                  };
-              },
-            ),
+        child: Listener(
+          onPointerDown: (PointerDownEvent event) {
+            if (event.kind == PointerDeviceKind.mouse &&
+                event.buttons == kMiddleMouseButton) {
+              _lastPanPosition = event.localPosition;
+            }
+          },
+          onPointerMove: (PointerMoveEvent event) {
+            if (event.kind == PointerDeviceKind.mouse) {
+              if (event.buttons == kMiddleMouseButton) {
+                // Middle mouse button: pan
+                setState(() {
+                  final dx = event.localPosition.dx - _lastPanPosition!.dx;
+                  final dy = event.localPosition.dy - _lastPanPosition!.dy;
+                  _transform = Matrix4.identity()
+                    ..translate(dx, dy)
+                    ..multiply(_transform);
+                  _lastPanPosition = event.localPosition;
+                });
+              } else if (event.buttons == kPrimaryMouseButton) {
+                // Left mouse button: draw
+                final inverseTransform = Matrix4.inverted(_transform);
+                final transformedPoint = inverseTransform.transform3(Vector3(
+                  event.localPosition.dx,
+                  event.localPosition.dy,
+                  0,
+                ));
+                final x = transformedPoint.x.round();
+                final y = transformedPoint.y.round();
+                togglePixel(x, y);
+              }
+            }
           },
         child: CustomPaint(
           size: Size(_canvasWidth.toDouble(), _canvasHeight.toDouble()),
