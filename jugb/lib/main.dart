@@ -48,12 +48,15 @@ class _PixelPainterState extends State<PixelPainter> {
           if (pointerSignal is PointerScrollEvent) {
             setState(() {
               double zoomFactor = 0.1;
+              double previousScale = _scale; // Store the previous scale
+
               _scale += pointerSignal.scrollDelta.dy * zoomFactor * -1; // Zoom in/out
               _scale = _scale.clamp(0.1, 10.0); // Limit zoom level
 
-              // Adjust offset based on zoom origin
+              // Adjust offset based on zoom origin and the change in scale
               Offset focalPoint = pointerSignal.localPosition;
-              _offset = (focalPoint - (focalPoint - _offset) / _scale * _scale);
+              _offset = focalPoint - (focalPoint - _offset) * (_scale / previousScale);
+
 
               debugPrint("Scale: $_scale, Offset: $_offset"); // Changed to debugPrint
             });
@@ -67,9 +70,9 @@ class _PixelPainterState extends State<PixelPainter> {
           onScaleUpdate: (details) {
             if (_lastPosition != null) {
               setState(() {
-                _offset += details.localFocalPoint - _lastPosition!;
+                double previousScale = _scale;
                 _scale *= details.scale;
-
+                _offset = details.localFocalPoint - (details.localFocalPoint - _offset) * (_scale / previousScale);
                 _lastPosition = details.localFocalPoint;
                 debugPrint("Scale: $_scale, Offset: $_offset"); // Changed to debugPrint
               });
