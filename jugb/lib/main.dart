@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:typed_data';
 import 'package:vector_math/vector_math_64.dart' show Vector3;
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 void main() {
   runApp(const MyApp());
@@ -31,18 +33,34 @@ class _PixelPainterState extends State<PixelPainter> {
   final int _canvasWidth = 1000;
   final int _canvasHeight = 1000;
   late Uint8List _pixels;
+  Matrix4 _transform = Matrix4.identity();
+  Offset? _lastPanPosition;
+  Offset? _lastDrawPosition;
 
   @override
   void initState() {
     super.initState();
     _pixels = Uint8List(1000 * 1000);
-    for (int i = 0; i < _pixels.length; i++) {
-      _pixels[i] = 255;  // Initialize with white color
+    _fetchInitialState();
+  }
+
+  Future<void> _fetchInitialState() async {
+    final response = await http.get(Uri.parse('https://b.jugregator.org/api/grid'));
+    if (response.statusCode == 200) {
+      final decodedBytes = base64.decode(response.body);
+      for (int i = 0; i < decodedBytes.length; i++) {
+        for (int bit = 0; bit < 8; bit++) {
+          int pixelIndex = i * 8 + bit;
+          if (pixelIndex < _pixels.length) {
+            _pixels[pixelIndex] = ((decodedBytes[i] >> bit) & 1) == 1 ? 0 : 255;
+          }
+        }
+      }
+      setState(() {});
+    } else {
+      print('Failed to load initial state');
     }
   }
-  Matrix4 _transform = Matrix4.identity();
-  Offset? _lastPanPosition;
-  Offset? _lastDrawPosition;
 
   @override
   Widget build(BuildContext context) {
