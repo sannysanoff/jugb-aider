@@ -82,10 +82,6 @@ class _PixelPainterState extends State<PixelPainter> {
           print('Image decoded successfully');
           completer.complete(img);
         },
-        onError: (error) {
-          print('Error decoding image: $error');
-          completer.completeError(error);
-        },
       );
       
       _cachedImage = await completer.future;
