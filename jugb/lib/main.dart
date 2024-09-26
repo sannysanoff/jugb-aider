@@ -72,15 +72,24 @@ class _PixelPainterState extends State<PixelPainter> {
       print('Pixel data length: ${_pixels.length}');
       print('Canvas dimensions: $_canvasWidth x $_canvasHeight');
       
+      // Ensure pixel data is valid
+      if (_pixels.length != _canvasWidth * _canvasHeight * 4) {
+        throw Exception('Invalid pixel data length');
+      }
+
       final completer = Completer<ui.Image>();
       ui.decodeImageFromPixels(
         _pixels,
         _canvasWidth,
         _canvasHeight,
         ui.PixelFormat.rgba8888,
-        (ui.Image img) {
-          print('Image decoded successfully');
-          completer.complete(img);
+        (ui.Image? img) {
+          if (img == null) {
+            completer.completeError('Failed to decode image');
+          } else {
+            print('Image decoded successfully');
+            completer.complete(img);
+          }
         },
       );
       
@@ -90,9 +99,13 @@ class _PixelPainterState extends State<PixelPainter> {
       setState(() {});
     } catch (e) {
       print('Error in _updateCachedImage: $e');
-      // Handle the error, maybe set _cachedImage to null
       _cachedImage = null;
       _needsImageUpdate = true;
+      // Add a delay before retrying
+      await Future.delayed(Duration(seconds: 1));
+      if (mounted) {
+        setState(() {}); // Trigger a rebuild to retry
+      }
     }
   }
 
@@ -299,8 +312,11 @@ class _PixelPainterState extends State<PixelPainter> {
 
   void invertPixel(int x, int y) {
     if (x >= 0 && x < _canvasWidth && y >= 0 && y < _canvasHeight) {
-      int index = y * _canvasWidth + x;
-      _pixels[index] = 80;  // Set to 80 (will be drawn as red)
+      int index = (y * _canvasWidth + x) * 4;  // 4 bytes per pixel (RGBA)
+      _pixels[index] = 255;     // Red
+      _pixels[index + 1] = 0;   // Green
+      _pixels[index + 2] = 0;   // Blue
+      _pixels[index + 3] = 255; // Alpha (fully opaque)
       _needsImageUpdate = true;
       setState(() {});
       
@@ -332,12 +348,12 @@ class _PixelPainter extends CustomPainter {
       // Fallback to pixel-by-pixel drawing if image is not available
       for (int y = 0; y < size.height.toInt(); y++) {
         for (int x = 0; x < canvasWidth; x++) {
-          final pixelValue = pixels[y * canvasWidth + x];
-          final color = pixelValue == 80 ? Colors.red : Color.fromRGBO(
-            pixelValue,
-            pixelValue,
-            pixelValue,
-            1
+          final index = (y * canvasWidth + x) * 4;
+          final color = Color.fromARGB(
+            pixels[index + 3],
+            pixels[index],
+            pixels[index + 1],
+            pixels[index + 2],
           );
           final rect = Rect.fromLTWH(x.toDouble(), y.toDouble(), 1.0, 1.0);
           canvas.drawRect(rect, Paint()..color = color);
