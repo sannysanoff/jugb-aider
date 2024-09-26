@@ -57,13 +57,22 @@ class _PixelPainterState extends State<PixelPainter> {
               Offset previousOffset = _offset;
               
               // Calculate new offset
-              _offset = focalPoint - (focalPoint - previousOffset) * (_scale / previousScale);
+              Offset newOffset = focalPoint - (focalPoint - previousOffset) * (_scale / previousScale);
+              
+              // Adjust offset to keep the grid centered
+              Size viewportSize = context.size ?? Size.zero;
+              Offset centerOffset = Offset(
+                (viewportSize.width / 2) - (_canvasWidth * _scale / 2),
+                (viewportSize.height / 2) - (_canvasHeight * _scale / 2)
+              );
+              _offset = newOffset + centerOffset;
 
               debugPrint("Zoom event:");
               debugPrint("Previous scale: $previousScale, New scale: $_scale");
               debugPrint("Focal point: $focalPoint");
               debugPrint("Previous offset: $previousOffset, New offset: $_offset");
-              debugPrint("Viewport size: ${context.size}");
+              debugPrint("Viewport size: $viewportSize");
+              debugPrint("Center offset: $centerOffset");
             });
           }
         },
