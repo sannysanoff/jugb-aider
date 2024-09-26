@@ -33,8 +33,6 @@ class PixelPainter extends StatefulWidget {
   State<PixelPainter> createState() => _PixelPainterState();
 }
 
-import 'dart:ui' as ui;
-
 class _PixelPainterState extends State<PixelPainter> {
   final int _canvasWidth = 1000;
   final int _canvasHeight = 1000;
