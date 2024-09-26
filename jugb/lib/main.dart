@@ -44,6 +44,27 @@ class _PixelPainterState extends State<PixelPainter> {
             print('Mouse wheel event detected:');
             print('  Scroll delta: ${pointerSignal.scrollDelta}');
             print('  Local position: ${pointerSignal.localPosition}');
+            
+            setState(() {
+              // Determine zoom factor based on scroll direction
+              final zoomFactor = 1 - (pointerSignal.scrollDelta.dy / 100);
+              
+              // Calculate the focal point in the canvas coordinate system
+              final focalPointInCanvas = Matrix4.inverted(_transform).transform3(Vector3(
+                pointerSignal.localPosition.dx,
+                pointerSignal.localPosition.dy,
+                0,
+              ));
+
+              // Create a new transform that scales around the focal point
+              final newTransform = Matrix4.identity()
+                ..translate(focalPointInCanvas.x, focalPointInCanvas.y)
+                ..scale(zoomFactor)
+                ..translate(-focalPointInCanvas.x, -focalPointInCanvas.y);
+
+              // Combine the new transform with the existing one
+              _transform = newTransform * _transform;
+            });
           }
         },
         child: GestureDetector(
