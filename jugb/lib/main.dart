@@ -197,18 +197,6 @@ class _PixelPainterState extends State<PixelPainter> {
     }
   }
 
-  void _updatePixels(List<dynamic> coordinates, bool isOn) {
-    for (final coord in coordinates) {
-      final String coordStr = coord.toString().padLeft(6, '0');
-      final int y = int.parse(coordStr.substring(0, 3));
-      final int x = int.parse(coordStr.substring(3));
-      if (x >= 0 && x < _canvasWidth && y >= 0 && y < _canvasHeight) {
-        int index = y * _canvasWidth + x;
-        _pixels[index] = isOn ? 0 : 255;
-      }
-    }
-  }
-
   @override
   void dispose() {
     _channel.sink.close();
