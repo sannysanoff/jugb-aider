@@ -63,7 +63,7 @@ class _PixelPainterState extends State<PixelPainter> {
             ..scale(_scale),
           child: CustomPaint(
             size: Size(_canvasWidth.toDouble(), _canvasHeight.toDouble()), // Fixed size
-            painter: _PixelPainter(_pixels, _canvasWidth, _scale),
+            painter: _PixelPainter(_pixels, _canvasWidth, _scale), // Access _pixels after initialization
           ),
         ),
       ),
@@ -81,6 +81,7 @@ class _PixelPainterState extends State<PixelPainter> {
     }
   }
 }
+
 
 class _PixelPainter extends CustomPainter {
   final Uint8List pixels;
