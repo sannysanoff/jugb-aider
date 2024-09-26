@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart'; // Import for PointerScrollEvent
 import 'package:flutter/material.dart';
 import 'dart:typed_data';
+import 'dart:developer';
 
 void main() {
   runApp(const MyApp());
@@ -52,12 +53,15 @@ class _PixelPainterState extends State<PixelPainter> {
               // Adjust offset based on zoom origin
               Offset focalPoint = pointerSignal.localPosition;
               _offset = (focalPoint - (focalPoint - _offset) / _scale * _scale);
+
+              log("Scale: $_scale, Offset: $_offset");
             });
           }
         },
         child: GestureDetector(
           onScaleStart: (details) {
             _lastPosition = details.localFocalPoint;
+            log("onScaleStart: ${details.localFocalPoint}");
           },
           onScaleUpdate: (details) {
             if (_lastPosition != null) {
@@ -66,6 +70,7 @@ class _PixelPainterState extends State<PixelPainter> {
                 _scale *= details.scale;
 
                 _lastPosition = details.localFocalPoint;
+                log("Scale: $_scale, Offset: $_offset");
               });
             }
           },
@@ -73,6 +78,10 @@ class _PixelPainterState extends State<PixelPainter> {
             // Apply inverse transformation to get correct pixel coordinates
             final x = ((details.localPosition.dx - _offset.dx) / _scale).round();
             final y = ((details.localPosition.dy - _offset.dy) / _scale).round();
+
+            log("TapDown Local: ${details.localPosition}, Global: ${details.globalPosition}, Scale: $_scale, Offset: $_offset");
+            log("Calculated pixel x: $x, y: $y");
+
             togglePixel(x, y);
           },
           child: Transform(
