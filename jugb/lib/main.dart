@@ -67,17 +67,37 @@ class _PixelPainterState extends State<PixelPainter> {
   }
 
   Future<void> _updateCachedImage() async {
-    final completer = Completer<ui.Image>();
-    ui.decodeImageFromPixels(
-      _pixels,
-      _canvasWidth,
-      _canvasHeight,
-      ui.PixelFormat.rgba8888,
-      completer.complete,
-    );
-    _cachedImage = await completer.future;
-    _needsImageUpdate = false;
-    setState(() {});
+    try {
+      print('Updating cached image');
+      print('Pixel data length: ${_pixels.length}');
+      print('Canvas dimensions: $_canvasWidth x $_canvasHeight');
+      
+      final completer = Completer<ui.Image>();
+      ui.decodeImageFromPixels(
+        _pixels,
+        _canvasWidth,
+        _canvasHeight,
+        ui.PixelFormat.rgba8888,
+        (ui.Image img) {
+          print('Image decoded successfully');
+          completer.complete(img);
+        },
+        onError: (error) {
+          print('Error decoding image: $error');
+          completer.completeError(error);
+        },
+      );
+      
+      _cachedImage = await completer.future;
+      print('Cached image updated');
+      _needsImageUpdate = false;
+      setState(() {});
+    } catch (e) {
+      print('Error in _updateCachedImage: $e');
+      // Handle the error, maybe set _cachedImage to null
+      _cachedImage = null;
+      _needsImageUpdate = true;
+    }
   }
 
   void _startUpdateTimer() {
