@@ -32,6 +32,8 @@ class PixelPainter extends StatefulWidget {
   State<PixelPainter> createState() => _PixelPainterState();
 }
 
+import 'dart:ui' as ui;
+
 class _PixelPainterState extends State<PixelPainter> {
   final int _canvasWidth = 1000;
   final int _canvasHeight = 1000;
@@ -44,6 +46,8 @@ class _PixelPainterState extends State<PixelPainter> {
   Timer? _updateTimer;
   int _inFlightRequests = 0;
   static const int _maxConcurrentRequests = 4;
+  ui.Image? _cachedImage;
+  bool _needsImageUpdate = true;
 
   @override
   void initState() {
@@ -52,6 +56,29 @@ class _PixelPainterState extends State<PixelPainter> {
     _fetchInitialState();
     _connectWebSocket();
     _startUpdateTimer();
+    _startImageUpdateTimer();
+  }
+
+  void _startImageUpdateTimer() {
+    Timer.periodic(Duration(milliseconds: 100), (_) {
+      if (_needsImageUpdate) {
+        _updateCachedImage();
+      }
+    });
+  }
+
+  Future<void> _updateCachedImage() async {
+    final completer = Completer<ui.Image>();
+    ui.decodeImageFromPixels(
+      _pixels,
+      _canvasWidth,
+      _canvasHeight,
+      ui.PixelFormat.rgba8888,
+      completer.complete,
+    );
+    _cachedImage = await completer.future;
+    _needsImageUpdate = false;
+    setState(() {});
   }
 
   void _startUpdateTimer() {
@@ -249,7 +276,7 @@ class _PixelPainterState extends State<PixelPainter> {
           },
         child: CustomPaint(
           size: Size(_canvasWidth.toDouble(), _canvasHeight.toDouble()),
-          painter: _PixelPainter(_pixels, _canvasWidth, _transform),
+          painter: _PixelPainter(_pixels, _canvasWidth, _transform, _cachedImage),
         ),
       ),
     ));
@@ -259,6 +286,7 @@ class _PixelPainterState extends State<PixelPainter> {
     if (x >= 0 && x < _canvasWidth && y >= 0 && y < _canvasHeight) {
       int index = y * _canvasWidth + x;
       _pixels[index] = 80;  // Set to 80 (will be drawn as red)
+      _needsImageUpdate = true;
       setState(() {});
       
       // Add to update queue
@@ -275,24 +303,30 @@ class _PixelPainter extends CustomPainter {
   final Uint8List pixels;
   final int canvasWidth;
   final Matrix4 transform;
+  final ui.Image? cachedImage;
 
-  _PixelPainter(this.pixels, this.canvasWidth, this.transform);
+  _PixelPainter(this.pixels, this.canvasWidth, this.transform, this.cachedImage);
 
   @override
   void paint(Canvas canvas, Size size) {
     canvas.transform(transform.storage);
 
-    for (int y = 0; y < size.height.toInt(); y++) {
-      for (int x = 0; x < canvasWidth; x++) {
-        final pixelValue = pixels[y * canvasWidth + x];
-        final color = pixelValue == 80 ? Colors.red : Color.fromRGBO(
-          pixelValue,
-          pixelValue,
-          pixelValue,
-          1
-        );
-        final rect = Rect.fromLTWH(x.toDouble(), y.toDouble(), 1.0, 1.0);
-        canvas.drawRect(rect, Paint()..color = color);
+    if (cachedImage != null) {
+      canvas.drawImage(cachedImage!, Offset.zero, Paint());
+    } else {
+      // Fallback to pixel-by-pixel drawing if image is not available
+      for (int y = 0; y < size.height.toInt(); y++) {
+        for (int x = 0; x < canvasWidth; x++) {
+          final pixelValue = pixels[y * canvasWidth + x];
+          final color = pixelValue == 80 ? Colors.red : Color.fromRGBO(
+            pixelValue,
+            pixelValue,
+            pixelValue,
+            1
+          );
+          final rect = Rect.fromLTWH(x.toDouble(), y.toDouble(), 1.0, 1.0);
+          canvas.drawRect(rect, Paint()..color = color);
+        }
       }
     }
 
@@ -312,7 +346,7 @@ class _PixelPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
+  bool shouldRepaint(covariant _PixelPainter oldDelegate) {
+    return pixels != oldDelegate.pixels || transform != oldDelegate.transform || cachedImage != oldDelegate.cachedImage;
   }
 }
