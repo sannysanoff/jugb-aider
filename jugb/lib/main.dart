@@ -171,6 +171,7 @@ class _PixelPainterState extends State<PixelPainter> {
     if (data.containsKey('off')) {
       _updatePixels(data['off'] as List<dynamic>, false);
     }
+    _needsImageUpdate = true;
     setState(() {});
   }
 
@@ -214,6 +215,7 @@ class _PixelPainterState extends State<PixelPainter> {
       print('Error fetching initial state: $e');
       _initializeWhiteCanvas();
     }
+    _needsImageUpdate = true;
     setState(() {});
   }
 
