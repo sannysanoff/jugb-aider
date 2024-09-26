@@ -12,7 +12,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Pixel Painter',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
       home: Scaffold(
+        appBar: AppBar(
+          title: Text('Pixel Painter'),
+        ),
         body: PixelPainter(),
       ),
     );
