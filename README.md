@@ -7,7 +7,7 @@ this is an effort to build b.juggregator.org client using only aider.
 4. added networking
 5. added paint optimizations
 
-see (input_history-human.md)[input_history-human.md] to see chat session (cleaned up)
+see [input_history-human.md](input_history-human.md) to see chat session (cleaned up)
 
-watch (jug-video.mp4)[video] to see app in action.
+watch [video](jug-video.mp4) to see app in action.
 
