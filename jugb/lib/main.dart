@@ -70,7 +70,10 @@ class _PixelPainterState extends State<PixelPainter> {
             }
           },
           onTapDown: (details) {
-            togglePixel(details.localPosition);
+            // Apply inverse transformation to get correct pixel coordinates
+            final x = ((details.localPosition.dx - _offset.dx) / _scale).round();
+            final y = ((details.localPosition.dy - _offset.dy) / _scale).round();
+            togglePixel(x, y);
           },
           child: Transform(
             transform: Matrix4.identity()
@@ -86,11 +89,7 @@ class _PixelPainterState extends State<PixelPainter> {
     );
   }
 
-  void togglePixel(Offset position) {
-    // Apply inverse transformation to get correct pixel coordinates
-    final x = ((position.dx - _offset.dx) / _scale).round();
-    final y = ((position.dy - _offset.dy) / _scale).round();
-
+  void togglePixel(int x, int y) {
     // Check if the click is within the bounds of the canvas
     if (x >= 0 && x < _canvasWidth && y >= 0 && y < _canvasHeight) {
       setState(() {
