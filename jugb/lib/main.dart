@@ -8,6 +8,7 @@ import 'dart:convert';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'dart:async';
 import 'dart:collection';
+import 'dart:ui' as ui;
 
 void main() {
   runApp(const MyApp());
