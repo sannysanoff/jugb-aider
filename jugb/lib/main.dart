@@ -72,14 +72,27 @@ class _PixelPainterState extends State<PixelPainter> {
       print('Pixel data length: ${_pixels.length}');
       print('Canvas dimensions: $_canvasWidth x $_canvasHeight');
       
-      // Ensure pixel data is valid
-      if (_pixels.length != _canvasWidth * _canvasHeight * 4) {
+      // Ensure pixel data is valid and convert to RGBA if necessary
+      Uint8List rgbaPixels;
+      if (_pixels.length == _canvasWidth * _canvasHeight) {
+        // Convert from grayscale to RGBA
+        rgbaPixels = Uint8List(_canvasWidth * _canvasHeight * 4);
+        for (int i = 0; i < _pixels.length; i++) {
+          int j = i * 4;
+          rgbaPixels[j] = _pixels[i];     // R
+          rgbaPixels[j + 1] = _pixels[i]; // G
+          rgbaPixels[j + 2] = _pixels[i]; // B
+          rgbaPixels[j + 3] = 255;        // A (fully opaque)
+        }
+      } else if (_pixels.length == _canvasWidth * _canvasHeight * 4) {
+        rgbaPixels = _pixels;
+      } else {
         throw Exception('Invalid pixel data length');
       }
 
       final completer = Completer<ui.Image>();
       ui.decodeImageFromPixels(
-        _pixels,
+        rgbaPixels,
         _canvasWidth,
         _canvasHeight,
         ui.PixelFormat.rgba8888,
@@ -312,11 +325,18 @@ class _PixelPainterState extends State<PixelPainter> {
 
   void invertPixel(int x, int y) {
     if (x >= 0 && x < _canvasWidth && y >= 0 && y < _canvasHeight) {
-      int index = (y * _canvasWidth + x) * 4;  // 4 bytes per pixel (RGBA)
-      _pixels[index] = 255;     // Red
-      _pixels[index + 1] = 0;   // Green
-      _pixels[index + 2] = 0;   // Blue
-      _pixels[index + 3] = 255; // Alpha (fully opaque)
+      int index = y * _canvasWidth + x;
+      if (_pixels.length == _canvasWidth * _canvasHeight) {
+        // Grayscale format
+        _pixels[index] = _pixels[index] == 0 ? 255 : 0;
+      } else if (_pixels.length == _canvasWidth * _canvasHeight * 4) {
+        // RGBA format
+        index *= 4;
+        _pixels[index] = _pixels[index] == 0 ? 255 : 0;     // Red
+        _pixels[index + 1] = _pixels[index + 1] == 0 ? 255 : 0;   // Green
+        _pixels[index + 2] = _pixels[index + 2] == 0 ? 255 : 0;   // Blue
+        _pixels[index + 3] = 255; // Alpha (fully opaque)
+      }
       _needsImageUpdate = true;
       setState(() {});
       
