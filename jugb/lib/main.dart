@@ -340,11 +340,11 @@ class _PixelPainterState extends State<PixelPainter> {
       int index = y * _canvasWidth + x;
       if (_pixels.length == _canvasWidth * _canvasHeight) {
         // Grayscale format
-        _pixels[index] = 80; // Set to red (value 80)
+        _pixels[index] = 255; // Set to red (full intensity)
       } else if (_pixels.length == _canvasWidth * _canvasHeight * 4) {
         // RGBA format
         index *= 4;
-        _pixels[index] = 80;     // Red (value 80)
+        _pixels[index] = 255;    // Red (full intensity)
         _pixels[index + 1] = 0;  // Green
         _pixels[index + 2] = 0;  // Blue
         _pixels[index + 3] = 255; // Alpha (fully opaque)
