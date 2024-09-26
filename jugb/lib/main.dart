@@ -142,16 +142,21 @@ class _PixelPainterState extends State<PixelPainter> {
       final response = await http.post(url);
       if (response.statusCode != 200) {
         print('Failed to update pixel: ${response.statusCode}');
-        // Optionally, you can add the pixel back to the queue for retry
-        // _pixelUpdateQueue.addLast(pixelCoord);
+        _reschedulePixelUpdate(pixelCoord);
       }
     } catch (e) {
       print('Error updating pixel: $e');
-      // Optionally, you can add the pixel back to the queue for retry
-      // _pixelUpdateQueue.addLast(pixelCoord);
+      _reschedulePixelUpdate(pixelCoord);
     } finally {
       _inFlightRequests--;
       _processPixelUpdateQueue(); // Try to process more pixels if possible
+    }
+  }
+
+  void _reschedulePixelUpdate(String pixelCoord) {
+    // Add the pixel back to the queue for retry
+    if (!_pixelUpdateQueue.contains(pixelCoord)) {
+      _pixelUpdateQueue.addLast(pixelCoord);
     }
   }
 
