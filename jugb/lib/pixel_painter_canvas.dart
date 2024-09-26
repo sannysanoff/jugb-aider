@@ -22,7 +22,7 @@ class PixelPainterCanvas extends CustomPainter {
       final int maxX = canvasWidth.clamp(0, pixels.length ~/ 4 - 1);
       for (int y = 0; y < maxY; y++) {
         for (int x = 0; x < maxX; x++) {
-          final index = (y * canvasWidth + x) * 4;
+          final index = (y *canvasWidth + x) * 4;
           if (index + 3 < pixels.length) {
             final color = Color.fromARGB(
               pixels[index + 3],
