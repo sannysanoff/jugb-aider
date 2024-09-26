@@ -73,9 +73,22 @@ class _PixelPainterState extends State<PixelPainter> {
         },
         child: Listener(
           onPointerDown: (PointerDownEvent event) {
-            if (event.kind == PointerDeviceKind.mouse &&
-                event.buttons == kMiddleMouseButton) {
-              _lastPanPosition = event.localPosition;
+            if (event.kind == PointerDeviceKind.mouse) {
+              if (event.buttons == kMiddleMouseButton) {
+                _lastPanPosition = event.localPosition;
+              } else if (event.buttons == kPrimaryMouseButton) {
+                // Handle single click for left mouse button
+                final inverseTransform = Matrix4.inverted(_transform);
+                final transformedPoint = inverseTransform.transform3(Vector3(
+                  event.localPosition.dx,
+                  event.localPosition.dy,
+                  0,
+                ));
+                final x = transformedPoint.x.round();
+                final y = transformedPoint.y.round();
+                invertPixel(x, y);
+                _lastDrawPosition = Offset(x.toDouble(), y.toDouble());
+              }
             }
           },
           onPointerMove: (PointerMoveEvent event) {
@@ -91,7 +104,7 @@ class _PixelPainterState extends State<PixelPainter> {
                   _lastPanPosition = event.localPosition;
                 });
               } else if (event.buttons == kPrimaryMouseButton) {
-                // Left mouse button: draw
+                // Left mouse button: draw (continuous)
                 final inverseTransform = Matrix4.inverted(_transform);
                 final transformedPoint = inverseTransform.transform3(Vector3(
                   event.localPosition.dx,
@@ -109,6 +122,11 @@ class _PixelPainterState extends State<PixelPainter> {
                   _lastDrawPosition = Offset(x.toDouble(), y.toDouble());
                 }
               }
+            }
+          },
+          onPointerUp: (PointerUpEvent event) {
+            if (event.kind == PointerDeviceKind.mouse) {
+              _lastDrawPosition = null;
             }
           },
         child: CustomPaint(
